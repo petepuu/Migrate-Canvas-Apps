@@ -186,12 +186,13 @@ This Power Platform solution installs Custom Connector
 
 3. Verify that all the connection are created. If not then click three dots next to connector to create new connection
 
-   <img width="400" alt="image" src="https://github.com/petepuu/power-platform-tools/assets/8307644/bddfc6e9-249d-479a-b06e-c7031dd6f9df">
+   <img width="350" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/22e6a34c-250e-457f-9ef3-db615b534fa4">
 
 <br>
 
 4. Solution import takes couple minutes
 
+<br>
 <br>
 
 # How to use the tool
@@ -200,31 +201,31 @@ Migration status is saved to **Migration Job** Dataverse table and users of the 
 
 1. Run the **Migrate Canvas Apps** app
 
-   <img width="300" alt="image" src="https://github.com/petepuu/power-platform-tools/assets/8307644/379b47fd-2836-4b71-8fef-ff74815d4794">
+   <img width="300" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/93d51143-59d8-4dc3-aa8e-aa4b936bbcc1">
 
 <br>
 
 2. Consent all connection by clicking **Allow**
 
-   <img width="250" alt="image" src="https://github.com/petepuu/power-platform-tools/assets/8307644/983d8f1b-9471-48fc-9306-4b5d78eba7f6">
- 
+   <img width="300" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/d7fd1b7b-5aa7-4ce4-8888-5fc18bd22ec5">
+
  <br>
  
 3. Select source environment
 
-   <img width="200" alt="image" src="https://github.com/petepuu/power-platform-tools/assets/8307644/80df4716-d919-41c8-81df-a9db736555d6">
+   <img width="150" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/c4633e20-37d5-44ad-884d-0a896e2d04ac">
 
  <br>
  
 4. Select the app you want to migrate. This will run GetPacjageResources flow to fetch all related resources of the app like flows and connections
 
-   <img width="300" alt="image" src="https://github.com/petepuu/power-platform-tools/assets/8307644/a7fcfed6-39fd-4f5d-88ac-a6e9924f7fcb">
+   <img width="300" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/c7e897f2-1fa5-44e2-9e39-72d5ace4a897">
 
  <br>
  
 5. Select target environment
 
-   <img width="250" alt="image" src="https://github.com/petepuu/power-platform-tools/assets/8307644/a04d02bd-1b35-4f7e-aaf6-b0c00dd76fe4">
+   <img width="200" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/0f203608-b3e4-45dd-adac-f540831bb7c6">
 
 <br>
 
@@ -232,28 +233,29 @@ Migration status is saved to **Migration Job** Dataverse table and users of the 
 
    You can create new connection(s) or select existing connection(s). Connection creation opens to new browser tab for target environment. If you want to create all connections click **Create All** which opens own browser tab for each connection.
 
-   <img width="600" alt="image" src="https://github.com/petepuu/power-platform-tools/assets/8307644/2581209d-df95-4de4-ac46-e424251c0a83"> 
+   <img width="550" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/a43dc14a-fbc8-484e-bdf5-4b30e7ad86d8">
    
-   <img width="650" alt="image" src="https://github.com/petepuu/power-platform-tools/assets/8307644/a4236efb-4ef0-4012-82ce-179273a49b25">
+   <img width="650" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/3189f324-1f57-48a5-a9fc-d3d138330003">
 
    **NOTE!** Browser pop-up blocker might block opening new browser tab. If that is the case then one option is to open target environment in  make.powerapps.com and manually create connections
 
 <br>
 
-8. After connections are created, click Refresh to fetch connections. You can still select connection you want using the dropdown control if there are multiple connections
+8. After connections are created, click **Refresh** to fetch connections. You can still select connection you want using the dropdown control if there are multiple connections
 
-   <img width="500" alt="image" src="https://github.com/petepuu/power-platform-tools/assets/8307644/f4bb4b69-6abf-4d8d-afa6-5435572111a9">
+   <img width="500" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/56446a13-9490-4b27-8d1d-c9de3e72835b">
 
 <br>
 
 9. Click **Migrate** to start the app migration. It takes few minutes depending how many related resources there are in the app
 
-    <img width="450" alt="image" src="https://github.com/petepuu/power-platform-tools/assets/8307644/cefc829e-c2f6-4fd7-9f4d-ae5266ec632d">
+    <img width="450" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/54410a0b-fbe1-4569-91a1-4ada70ed4757">
 
+<br>
 
 11. If migration was succefull then click **Next Step** to move to the next step of the process
 
-    <img width="550" alt="image" src="https://github.com/petepuu/power-platform-tools/assets/8307644/4982836b-5a4a-40ef-b663-6d17486cdec7">
+    <img width="550" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/f00dc403-2013-4003-87dd-fa2098a66dcd">
 
 <br>
 
@@ -261,18 +263,18 @@ Migration status is saved to **Migration Job** Dataverse table and users of the 
 
     **NOTE!** sometimes it can take little while for the migrated app to be visible here
 
-    <img width="550" alt="image" src="https://github.com/petepuu/power-platform-tools/assets/8307644/039a4817-ad5f-4964-a757-d983e851ed72">
+    <img width="550" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/30d97d02-555f-42a6-b25b-7a603c34eb14">
    
 <br>
 
 12. Now you should see all the permissions (if any) of the app in source environment. You can remove permissions if needed or do not share the app in target environment at all. Make the necessary changes and click **Share App** or click **Next Step** if you do not want to share the app for now
 
-    <img width="550" alt="image" src="https://github.com/petepuu/power-platform-tools/assets/8307644/3d2ef5c2-f552-43a9-bc62-05a717277cf3">
+    <img width="600" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/551ae3d5-154c-42eb-a1dc-2490bcf249ab">
 
     If you shared the app then when sharing is completed you should see the green success icon for each permission like below
 
-    <img width="550" alt="image" src="https://github.com/petepuu/power-platform-tools/assets/8307644/9636fdf4-72fd-4ed2-bcb4-043ef7fbe41a">
-      
+    <img width="550" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/7eec74d7-8926-4e48-a437-8c0b565f4c66">
+
 <br>
 
 13. In this step you have following options
@@ -282,13 +284,14 @@ Migration status is saved to **Migration Job** Dataverse table and users of the 
       - Remove the old version from source environment
 
          <br>
-         <img width="400" alt="image" src="https://github.com/petepuu/power-platform-tools/assets/8307644/454c8a28-7205-49e8-bda2-7ea1b470abe5">
+         <img width="400" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/b2666095-776a-4951-b1da-81255b26f749">
 
 <br>
 
 14. In last step you can send an email notification to all the users and groups about the migration (group members are not extracted, so email is send to group address). Email contains app link to the new app in target environment
 
-    <img width="600" alt="image" src="https://github.com/petepuu/power-platform-tools/assets/8307644/4a679d9d-f529-4196-9279-53b6bbb3c27c">
+    <img width="600" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/e6e61071-7dbc-4ade-8a7e-e683845cf73e">
+
 
 
   
