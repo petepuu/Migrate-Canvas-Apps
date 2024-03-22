@@ -12,61 +12,62 @@ Solution uses Power Platform BAP API to export and import packages, so we need t
    
 2. Click **New registration**
 
-   <img width="250" alt="image" src="https://github.com/petepuu/power-platform-tools/assets/8307644/71a52f05-ea43-42f4-8f66-944138a82aa8">
-   
+   <img width="200" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/07cf9acc-8210-452c-bc49-1612f69197bd">
+
 <br>
 
 3. Provide a name for the app and click **Register**
 
-   <img width="400" alt="image" src="https://github.com/petepuu/power-platform-tools/assets/8307644/ca42f7b5-b137-4ffe-8878-609008e84be0">
-   
+   <img width="300" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/3121299f-ca64-4f3f-9ffc-b653aa2b0f60">
+ 
 <br>
 
 4. Copy **Application (client) ID** and **Directory (tenant) ID** from the Overview page to notepad for example
    
-   <img width="300" alt="image" src="https://github.com/petepuu/power-platform-tools/assets/8307644/b4e27866-a855-4331-8c09-c560c4bed5f5">
+   <img width="300" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/28ae6806-a018-4a0c-a9a0-b8a7e7e1de23">
    
 <br>
 
 5. Browse to **Certificates & Secrets** blade anc click **+ New client secret**
    
-   <img width="400" alt="image" src="https://github.com/petepuu/power-platform-tools/assets/8307644/f158b353-5ee2-4060-8f14-48b88f57c1a0">
-   
+   <img width="350" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/f2bf4574-c3c7-4253-ae79-b6a20ad8e06a">
+
 <br>
 
 6. Define description for the secret and select expiration time
 
-   <img width="350" alt="image" src="https://github.com/petepuu/power-platform-tools/assets/8307644/f753024c-c490-48ce-845a-223456e23bf1">
+   <img width="350" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/c89eb9e2-dceb-47c7-a58a-b4b3329a956b">
    
 <br>
 
 7. Copy client secret value to notepad
 
-   <img width="350" alt="image" src="https://github.com/petepuu/power-platform-tools/assets/8307644/90937c80-d2dc-446a-8341-c374852f69fe">
+   <img width="300" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/c826a0a4-98a3-4470-9050-eb528f62e504">
    
 <br>
 
 8. Browse to **API permissions** blade and click **+ Add a permission**
 
-   <img width="350" alt="image" src="https://github.com/petepuu/power-platform-tools/assets/8307644/1af2ccc0-54d0-41e7-885b-15084c818162">
+   <img width="300" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/7b4fc919-2545-4152-988e-4e7519b45ccb">
    
 <br>
 
 9. Select **APIs my organization uses**, then search for **PowerApps** and select **PowerApps Service**
 
-    <img width="300" alt="image" src="https://github.com/petepuu/power-platform-tools/assets/8307644/ee634259-b162-4a93-b64a-c6b294251a59">
+    <img width="250" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/1f0097bf-dc49-4a6d-b5a4-19d7a8c60659">
+
     
 <br>
 
 10. Select **Delegated permissions**, then select **User** permission and click **Add permissions**
     
-    <img width="350" alt="image" src="https://github.com/petepuu/power-platform-tools/assets/8307644/35480805-2176-4e65-9f5b-64e62ca89190">
+    <img width="300" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/0977ae9b-554b-459c-89d5-10312b97310c">
     
 <br>
 
 11. (optional) Grant admin consent for the application. If you do not do this then all users need to grant consent in the first use of the Canvas App migration tool
 
-    <img width="250" alt="image" src="https://github.com/petepuu/power-platform-tools/assets/8307644/a4bc2033-ac07-4308-b450-1658a60f4c0b">
+    <img width="250" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/c3936ae3-88bc-4899-8aaa-971a9e6b6310">
 
 <br>
 
@@ -79,79 +80,79 @@ This Power Platform solution installs Custom Connector
   
 2. Select **Solutions** from the menu and click **Import solution**
    
-   <img width="350" alt="image" src="https://github.com/petepuu/power-platform-tools/assets/8307644/76f547bc-03c1-45fc-ac91-0a339e833b8a">
+   <img width="350" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/afd61089-f6b5-4f85-9452-9dd0bac21680">
 
 <br>
 
 3. Click **Browse** and select the **MigrateCanvasAppsPrerequisites_x_x_x_x_managed.zip** solution then click **Next**
    
-   <img width="350" alt="image" src="https://github.com/petepuu/power-platform-tools/assets/8307644/ee6c4749-54c7-4d5b-a97e-a4247e695ad1">
+   <img width="300" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/c3902060-1380-4ff1-8b5c-70eeed7ecad0">
 
 <br>
 
 4. Fill-in **Client ID** and **Tenant ID** you copied to notepad and click **Import**. NOTE! Current version support now only plaintext client secret which need to be set after solution import
    
-   <img width="250" alt="image" src="https://github.com/petepuu/power-platform-tools/assets/8307644/cd386a87-8009-49ac-8039-aefae0ae761b">
+   <img width="200" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/297ea01d-3b3f-46db-b06e-cfdb55652aaa">
 
 <br>
 
 5. After solution is imported, select **Custom Connectors** from the menu and click the pencil icon of the **Migrate Canvas Apps** custom connector to open it in edit mode
 
-   <img width="450" alt="image" src="https://github.com/petepuu/power-platform-tools/assets/8307644/39fc9ccb-0065-458d-8177-d81e94884b69">
+   <img width="450" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/9e4eb7b7-c24f-439e-bca9-428aacdabbd1">
 
 <br>
 
 7. Select **2. Security** and click **Edit**
 
-   <img width="300" alt="image" src="https://github.com/petepuu/power-platform-tools/assets/8307644/e9e9f212-6955-4e2c-b71d-8fcf40d4fa7a">
+   <img width="300" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/f8880165-396a-4998-a67e-f13c8892916f">
 
 <br>
 
 8. Copy-paste the **Client Secret** and click **Update connector**
 
-   <img width="350" alt="image" src="https://github.com/petepuu/power-platform-tools/assets/8307644/c1248819-29d0-4f0f-8af4-fa1a231f3b64">
+   <img width="350" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/3e8a667a-16f0-4937-b417-4a5eb5e579e6">
 
 <br>
 
 9. When connector is updated, scroll down to bottom of the page and copy **Redirect URL**
 
-   <img width="400" alt="image" src="https://github.com/petepuu/power-platform-tools/assets/8307644/8106b29e-fbcf-4201-a731-ed12576f1442">
+   <img width="400" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/e252f2be-5406-43a6-9d6d-3169c7d77b23">
 
 <br>
    
 10. Move back to Entra ID application registration we did in the first step and in the **Overview** page click **Add Redirect URI**
 
-    <img width="450" alt="image" src="https://github.com/petepuu/power-platform-tools/assets/8307644/3d10f7c6-4138-411e-8f98-6e497fa25e01">
+    <img width="450" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/777e55d2-f81d-4422-a6dc-cc3cce167ede">
 
 <br>
 
 11. Click **+Add a platform**
 
-   <img width="200" alt="image" src="https://github.com/petepuu/power-platform-tools/assets/8307644/7db241f5-83cc-4047-95fe-5c73bbb01e33">
+   <img width="200" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/94bc0714-16ee-44c8-92c0-71f683964589">
 
 <br>
     
 12. Select **Web**
 
-    <img width="200" alt="image" src="https://github.com/petepuu/power-platform-tools/assets/8307644/c8372736-dc58-4e29-93d2-e791ab24af1d">
+    <img width="200" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/e205e102-fed6-4874-b9a1-1a93a25117a5">
 
 <br>
 
 13. Paste URL to the **Redirect URIs** field and click **Configure**
 
-    <img width="350" alt="image" src="https://github.com/petepuu/power-platform-tools/assets/8307644/61d199de-54a8-42e0-b4f0-13b0b96f3527">
+    <img width="350" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/684701c1-37cf-4e62-bc33-4f21635e64bd">
 
 <br>
 
 14. Go back to custom connector configuration, select **5. Test** and click
 
-    <img width="150" alt="image" src="https://github.com/petepuu/power-platform-tools/assets/8307644/b84e62f7-ee40-4787-9234-d2f2ab02e3be">
+    <img width="150" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/cbe2c8d4-c4ab-46bb-8b61-2b07d6a25b3b">
 
 <br>
 
 15. Create new connection by cliking **Create** and login with your account
 
-    <img width="300" alt="image" src="https://github.com/petepuu/power-platform-tools/assets/8307644/c8fd1433-7413-4b8f-b90d-e9e63ca30c54">
+    <img width="350" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/4532948d-0257-45d6-8fba-ac145652700b">
 
 <br>
 
@@ -165,7 +166,7 @@ This Power Platform solution installs Custom Connector
     }
     ```
 
-    <img width="600" alt="image" src="https://github.com/petepuu/power-platform-tools/assets/8307644/19ec245c-9160-472a-90fb-ab895bfa7c93">
+    <img width="550" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/09428425-4061-4d3f-a56e-5fa963f07df4">
 
 <br>
 
@@ -173,13 +174,13 @@ This Power Platform solution installs Custom Connector
 
 1. Browse to **Solutions** of the environment and click **Import solution**
 
-   <img width="250" alt="image" src="https://github.com/petepuu/power-platform-tools/assets/8307644/fae84d17-3e4a-4cc6-95b4-c20b08225ddc">
+   <img width="250" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/08c1d5df-d45d-4539-899e-b6dad7f25597">
 
 <br>
 
 2. Click **Browse** and select the **MigrateCanvasApps_x_x_x_x_managed.zip** solution then click **Next**
 
-   <img width="300" alt="image" src="https://github.com/petepuu/power-platform-tools/assets/8307644/57c9b62a-6de5-470c-8483-99a82c27c55e">
+   <img width="250" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/0f02ec45-27b4-4c85-b602-06b3d429e685">
 
 <br>
 
