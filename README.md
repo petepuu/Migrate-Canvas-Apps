@@ -1,14 +1,10 @@
-# Power Platform Tools
-
-This is a repo of Power Platform helper tools
-
-## Migrate Canvas Apps
+# Migrate Canvas Apps
 
 Solution for migrating Canvas Apps and their related resources like Flows between environments. Solution includes simple Canvas App with supporting Cloud Flows and Custom Connector to do the migration. Migration  automated way to export/import apps. 
 
-### Installation and configuration
+## Installation and configuration
 
-#### Create Entra ID application registration
+### Create Entra ID application registration
 
 Solution uses Power Platform BAP API to export and import packages, so we need to create Microsoft Entra ID application registration for the user authentication. Follow the steps below to register new Entra ID application. Depending of your tenant settings, you might need Global Administrator permissions to be able to register new application. 
 
@@ -75,7 +71,7 @@ Solution uses Power Platform BAP API to export and import packages, so we need t
 <br>
 
 
-#### Import Migrate Canvas Apps - Prerequisites solution
+### Import Migrate Canvas Apps - Prerequisites solution
 
 This Power Platform solution installs Custom Connector
 
@@ -173,7 +169,7 @@ This Power Platform solution installs Custom Connector
 
 <br>
 
-#### Import Migrate Canvas Apps solution
+### Import Migrate Canvas Apps solution
 
 1. Browse to **Solutions** of the environment and click **Import solution**
 
@@ -197,7 +193,7 @@ This Power Platform solution installs Custom Connector
 
 <br>
 
-## How to use the tool
+# How to use the tool
 
 Migration status is saved to **Migration Job** Dataverse table and users of the app needs to have read-write permissions to this table. Solution contains own security role **Canvas Apps Migration Users** which grant Create, Read and Write permissions to the table, so add this security role to app app users
 
