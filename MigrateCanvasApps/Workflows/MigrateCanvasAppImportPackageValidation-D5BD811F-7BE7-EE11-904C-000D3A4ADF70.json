@@ -1,0 +1,1029 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_office365users_1": {
+        "runtimeSource": "invoker",
+        "connection": {
+          "connectionReferenceLogicalName": "powciti_Office365Users"
+        },
+        "api": {
+          "name": "shared_office365users"
+        }
+      },
+      "shared_commondataserviceforapps_1": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "powciti_sharedcommondataserviceforapps_4cf94"
+        },
+        "api": {
+          "name": "shared_commondataserviceforapps"
+        }
+      },
+      "shared_migrate-20canvas-20apps-5fb1c7f5321b570664-5f5aadce8b365dea81_1": {
+        "runtimeSource": "invoker",
+        "connection": {
+          "connectionReferenceLogicalName": "powciti_MigrateCanvasAppsConnector"
+        },
+        "api": {
+          "name": "shared_migrate-20canvas-20apps-5fb1c7f5321b570664-5f5aadce8b365dea81",
+          "logicalName": "powciti_migrate-20canvas-20apps"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        },
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        }
+      },
+      "triggers": {
+        "manual": {
+          "metadata": {
+            "operationMetadataId": "085678c6-c25c-49db-9450-68b93dd34d85"
+          },
+          "type": "Request",
+          "kind": "PowerAppV2",
+          "inputs": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "text_7": {
+                  "title": "MigrationJobID",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "Please enter your input",
+                  "x-ms-content-hint": "TEXT"
+                }
+              },
+              "required": [
+                "text_7"
+              ]
+            }
+          }
+        }
+      },
+      "actions": {
+        "Get_my_profile_(V2)": {
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "9d7ee3d9-7960-4b45-85a6-8d79b7e58045"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_office365users_1",
+              "operationId": "MyProfile_V2",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_office365users"
+            },
+            "parameters": {},
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "Respond_to_a_PowerApp_or_flow": {
+          "runAfter": {
+            "Update-MigrationJob": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "06ef095d-8382-4f47-9344-05284df14e5d"
+          },
+          "type": "Response",
+          "kind": "PowerApp",
+          "inputs": {
+            "statusCode": 200,
+            "body": {
+              "status": "@variables('MigrationStatus')",
+              "message": "@variables('MigrationMessage')",
+              "completed": "@{variables('MigrationCompleted')}",
+              "migrationjobid": "@triggerBody()['text_7']"
+            },
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "title": "Status",
+                  "x-ms-dynamically-added": true,
+                  "type": "string"
+                },
+                "message": {
+                  "title": "Message",
+                  "x-ms-dynamically-added": true,
+                  "type": "string"
+                },
+                "completed": {
+                  "title": "Completed",
+                  "x-ms-dynamically-added": true,
+                  "type": "string"
+                },
+                "migrationjobid": {
+                  "title": "MigrationJobID",
+                  "x-ms-dynamically-added": true,
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "MigrationStatus": {
+          "runAfter": {
+            "Get-MigrationJob": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "edf3adc1-9da6-4488-be1c-50637dfc51e0"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "MigrationStatus",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "MigrationMessage": {
+          "runAfter": {
+            "MigrationStatus": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "ce506b91-a4c5-4cec-b9ca-b7963da9caba"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "MigrationMessage",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "FlowConnections": {
+          "runAfter": {
+            "ImportTemplate": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "af7c2f43-48e0-4bcb-bd15-a1a62ea49d9f"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "FlowConnections",
+                "type": "array",
+                "value": "@json(outputs('Get-MigrationJob')?['body/powciti_flowconnectionmapping'])"
+              }
+            ]
+          }
+        },
+        "ImportTemplate": {
+          "runAfter": {
+            "MigrationCompleted": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "f0c8247b-271d-455b-abb8-3b4980fc4f36"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "ImportTemplate",
+                "type": "string",
+                "value": "{\n  \"status\": \"Succeeded\",\n    \"packageLink\": {\n        \"value\": \"###PACKAGELINK###\"\n    },\n  \"details\": {\n    \"displayName\": \"@{outputs('Get-MigrationJob')?['body/powciti_appname']}\",\n    \"description\": \"\",\n    \"createdTime\": \"###CREATEDTIME###\",\n    \"packageTelemetryId\": \"###PACKAGETELEMETRYID###\",\n    \"creator\": \"@{outputs('Get_my_profile_(V2)')?['body/displayName']}\",\n    \"sourceEnvironment\": \"@{outputs('Get-MigrationJob')?['body/powciti_sourceenvironmentname']}\"\n  },\n  \"resources\": {"
+              }
+            ]
+          }
+        },
+        "MigrationCompleted": {
+          "runAfter": {
+            "MigrationMessage": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "ae9e4bd7-48b3-4231-a872-f44485cbb549"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "MigrationCompleted",
+                "type": "boolean"
+              }
+            ]
+          }
+        },
+        "Get-MigrationJob": {
+          "runAfter": {
+            "Get_my_profile_(V2)": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "bdf2df5e-63d8-4973-a8da-eb1f8bd31009"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps_1",
+              "operationId": "GetItem",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "powciti_migrationjobs",
+              "recordId": "@triggerBody()['text_7']"
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "Update-MigrationJob": {
+          "runAfter": {
+            "ErrorHandling": [
+              "Succeeded",
+              "Skipped"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "8379417e-bb4b-48bb-b844-7484f8b778b5"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps_1",
+              "operationId": "UpdateRecord",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "powciti_migrationjobs",
+              "recordId": "@triggerBody()['text_7']",
+              "item/powciti_importpackagedefinition": "@body('Parse-ValidateImportPackage')",
+              "item/powciti_migrationmessage": "@variables('MigrationMessage')",
+              "item/powciti_migrationstatus": "@variables('MigrationStatus')"
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "PackageValidation": {
+          "actions": {
+            "ListImportOperation": {
+              "runAfter": {},
+              "metadata": {
+                "operationMetadataId": "076329e8-3ae5-4a96-9573-d21b4494738c"
+              },
+              "type": "OpenApiConnection",
+              "inputs": {
+                "host": {
+                  "connectionName": "shared_migrate-20canvas-20apps-5fb1c7f5321b570664-5f5aadce8b365dea81_1",
+                  "operationId": "ListImportOperation",
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_migrate-20canvas-20apps-5fb1c7f5321b570664-5f5aadce8b365dea81"
+                },
+                "parameters": {
+                  "EnvironmentID": "@outputs('Get-MigrationJob')?['body/powciti_targetenvironmentid']",
+                  "OperationID": "@outputs('Get-MigrationJob')?['body/powciti_importlocation']",
+                  "api-version": "2016-11-01"
+                },
+                "authentication": "@parameters('$authentication')"
+              }
+            },
+            "Parse-ListImportOperation": {
+              "runAfter": {
+                "ListImportOperation": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "5d0f1971-c863-4b75-af73-657a06f903a5"
+              },
+              "type": "ParseJson",
+              "inputs": {
+                "content": "@outputs('ListImportOperation')",
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "headers": {
+                      "type": "object",
+                      "properties": {
+                        "Cache-Control": {
+                          "type": "string"
+                        },
+                        "Strict-Transport-Security": {
+                          "type": "string"
+                        },
+                        "x-ms-islandgateway": {
+                          "type": "string"
+                        },
+                        "x-ms-request-id": {
+                          "type": "string"
+                        },
+                        "x-ms-correlation-request-id": {
+                          "type": "string"
+                        },
+                        "x-ms-correlation-id": {
+                          "type": "string"
+                        },
+                        "Server-Timing": {
+                          "type": "string"
+                        },
+                        "X-Content-Type-Options": {
+                          "type": "string"
+                        },
+                        "x-ms-service-request-id": {
+                          "type": "string"
+                        },
+                        "x-ms-activity-vector": {
+                          "type": "string"
+                        },
+                        "x-ms-apihub-cached-response": {
+                          "type": "string"
+                        },
+                        "x-ms-apihub-obo": {
+                          "type": "string"
+                        },
+                        "Date": {
+                          "type": "string"
+                        },
+                        "Content-Length": {
+                          "type": "string"
+                        },
+                        "Content-Type": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "body": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string"
+                        },
+                        "environmentName": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "properties": {
+                          "type": "object",
+                          "properties": {
+                            "status": {
+                              "type": "string"
+                            },
+                            "packageLink": {
+                              "type": "object",
+                              "properties": {
+                                "value": {
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            "details": {
+                              "type": "object",
+                              "properties": {
+                                "displayName": {
+                                  "type": "string"
+                                },
+                                "description": {
+                                  "type": "string"
+                                },
+                                "createdTime": {
+                                  "type": "string"
+                                },
+                                "packageTelemetryId": {
+                                  "type": "string"
+                                },
+                                "creator": {
+                                  "type": "string"
+                                },
+                                "sourceEnvironment": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "ModifyImportJSON": {
+              "actions": {
+                "GetResourcesXML": {
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "d8f5a89c-c542-4f71-a38d-b46dba9dae7f"
+                  },
+                  "type": "Compose",
+                  "inputs": "@xml(json(concat('{\"root\": { resources:', body('ListImportOperation')?['properties']['resources'], '}}')))"
+                },
+                "LoopResources": {
+                  "foreach": "@xpath(outputs('GetResourcesXML'), '/root/resources/*')",
+                  "actions": {
+                    "XMLtoJSON3": {
+                      "runAfter": {},
+                      "metadata": {
+                        "operationMetadataId": "5cc7c5b8-34b8-4f00-93f4-0717c7b19a39"
+                      },
+                      "type": "Compose",
+                      "inputs": "@json(item())"
+                    },
+                    "ElementID3": {
+                      "runAfter": {
+                        "XMLtoJSON3": [
+                          "Succeeded"
+                        ]
+                      },
+                      "metadata": {
+                        "operationMetadataId": "800030ff-9c5b-48e0-92c9-54991d4f8d72"
+                      },
+                      "type": "Compose",
+                      "inputs": "@substring(string(outputs('XMLtoJSON3')), 2, sub(indexOf(string(outputs('XMLtoJSON3')), ':'), 3))"
+                    },
+                    "ResourceJSON3": {
+                      "runAfter": {
+                        "ElementID3": [
+                          "Succeeded"
+                        ]
+                      },
+                      "metadata": {
+                        "operationMetadataId": "e791dec2-90d5-4c02-ac5e-39090f357062"
+                      },
+                      "type": "Compose",
+                      "inputs": "@body('ListImportOperation')['properties']['resources'][outputs('ElementID3')]"
+                    },
+                    "ProcessResource": {
+                      "runAfter": {
+                        "ResourceJSON3": [
+                          "Succeeded"
+                        ]
+                      },
+                      "cases": {
+                        "Flow_Connection": {
+                          "case": "Microsoft.PowerApps/apis/connections",
+                          "actions": {
+                            "GetFlowConnection": {
+                              "runAfter": {},
+                              "metadata": {
+                                "operationMetadataId": "f370922c-e994-447e-81a4-7d8f986973e3"
+                              },
+                              "type": "Query",
+                              "inputs": {
+                                "from": "@variables('FlowConnections')",
+                                "where": "@equals(item()['FlowConnPackageID'], outputs('ElementID3'))"
+                              }
+                            },
+                            "Add-selectedCreationType": {
+                              "runAfter": {
+                                "GetFlowConnection": [
+                                  "Succeeded"
+                                ]
+                              },
+                              "metadata": {
+                                "operationMetadataId": "1c96f573-44a7-42f2-9938-0d4fec5132f4"
+                              },
+                              "type": "Compose",
+                              "inputs": "@addProperty(outputs('ResourceJSON3'), 'selectedCreationType', 'Existing')"
+                            },
+                            "DoesContainSuggestedID": {
+                              "actions": {
+                                "SuggestedID": {
+                                  "runAfter": {},
+                                  "metadata": {
+                                    "operationMetadataId": "6c32d713-dbe4-4efa-89ae-9ebd07d6f1e3"
+                                  },
+                                  "type": "Compose",
+                                  "inputs": "@substring(outputs('ResourceJSON3')['suggestedId'], 0, lastIndexOf(outputs('ResourceJSON3')['suggestedId'], '/'))",
+                                  "description": "Get ID path from suggestedId without flow ID"
+                                },
+                                "SetID": {
+                                  "runAfter": {
+                                    "SuggestedID": [
+                                      "Succeeded"
+                                    ]
+                                  },
+                                  "metadata": {
+                                    "operationMetadataId": "57099a85-3e6d-4134-9fd2-b73a7e5b1104"
+                                  },
+                                  "type": "Compose",
+                                  "inputs": "@addProperty(outputs('Add-selectedCreationType'), 'id', concat(outputs('SuggestedID'), '/', first(body('GetFlowConnection'))['New']))"
+                                },
+                                "Append_to_string_variable_9": {
+                                  "runAfter": {
+                                    "SetID": [
+                                      "Succeeded"
+                                    ]
+                                  },
+                                  "metadata": {
+                                    "operationMetadataId": "f9875627-eac9-4fd4-9093-97ecd8375457"
+                                  },
+                                  "type": "AppendToStringVariable",
+                                  "inputs": {
+                                    "name": "ImportTemplate",
+                                    "value": "@concat('\"', outputs('ElementID3'), '\":', string(outputs('SetID')), ',')"
+                                  }
+                                }
+                              },
+                              "runAfter": {
+                                "Add-selectedCreationType": [
+                                  "Succeeded"
+                                ]
+                              },
+                              "else": {
+                                "actions": {
+                                  "GetConnectorIconURL": {
+                                    "runAfter": {},
+                                    "metadata": {
+                                      "operationMetadataId": "23e67ee3-0b31-45cb-b2f8-dbeb06616b92"
+                                    },
+                                    "type": "Compose",
+                                    "inputs": "@split(outputs('Add-selectedCreationType')['details/iconUri'], '/')"
+                                  },
+                                  "Append_to_string_variable_5": {
+                                    "runAfter": {
+                                      "SetID2": [
+                                        "Succeeded"
+                                      ]
+                                    },
+                                    "metadata": {
+                                      "operationMetadataId": "08a5bc19-2bd6-40f4-82e0-a9b925d609de"
+                                    },
+                                    "type": "AppendToStringVariable",
+                                    "inputs": {
+                                      "name": "ImportTemplate",
+                                      "value": "@concat('\"', outputs('ElementID3'), '\":', string(outputs('SetID2')), ',')"
+                                    }
+                                  },
+                                  "GetConnectorTypeFromIconURL": {
+                                    "runAfter": {
+                                      "GetConnectorIconURL": [
+                                        "Succeeded"
+                                      ]
+                                    },
+                                    "metadata": {
+                                      "operationMetadataId": "afee9793-495c-475a-aa61-f41cd2fbd6ac"
+                                    },
+                                    "type": "Compose",
+                                    "inputs": "@outputs('GetConnectorIconURL')[sub(length(outputs('GetConnectorIconURL')), 2)]"
+                                  },
+                                  "SetID2": {
+                                    "runAfter": {
+                                      "GetConnectorTypeFromIconURL": [
+                                        "Succeeded"
+                                      ]
+                                    },
+                                    "metadata": {
+                                      "operationMetadataId": "e4a238c7-1c5b-4858-8bc8-9d41a61bb70a"
+                                    },
+                                    "type": "Compose",
+                                    "inputs": "@addProperty(outputs('Add-selectedCreationType'), 'id', concat('/providers/Microsoft.PowerApps/apis/shared_', outputs('GetConnectorTypeFromIconURL'), '/connections/',  first(body('GetFlowConnection'))['New']))"
+                                  }
+                                }
+                              },
+                              "expression": {
+                                "contains": [
+                                  "@outputs('ResourceJSON3')",
+                                  "suggestedId"
+                                ]
+                              },
+                              "metadata": {
+                                "operationMetadataId": "bef48c7c-96c0-4578-9c45-fa52f8729bd3"
+                              },
+                              "type": "If"
+                            }
+                          }
+                        },
+                        "Connections": {
+                          "case": "Microsoft.PowerApps/apis",
+                          "actions": {
+                            "Append_to_string_variable_6": {
+                              "runAfter": {},
+                              "metadata": {
+                                "operationMetadataId": "8bef6b23-441f-4151-b815-6f0e05874f5c"
+                              },
+                              "type": "AppendToStringVariable",
+                              "inputs": {
+                                "name": "ImportTemplate",
+                                "value": "@concat('\"', outputs('ElementID3'), '\": ', string(outputs('ResourceJSON3')), ',')"
+                              }
+                            }
+                          }
+                        },
+                        "App": {
+                          "case": "Microsoft.PowerApps/apps",
+                          "actions": {
+                            "Add-selectedCreationType2": {
+                              "runAfter": {},
+                              "metadata": {
+                                "operationMetadataId": "786c202b-e5eb-4046-8ac9-017de28047c1"
+                              },
+                              "type": "Compose",
+                              "inputs": "@addProperty(outputs('ResourceJSON3'), 'selectedCreationType', 'New')"
+                            },
+                            "Append_to_string_variable_7": {
+                              "runAfter": {
+                                "Add-selectedCreationType2": [
+                                  "Succeeded"
+                                ]
+                              },
+                              "metadata": {
+                                "operationMetadataId": "a8914609-2200-4b91-b06d-55253597fb36"
+                              },
+                              "type": "AppendToStringVariable",
+                              "inputs": {
+                                "name": "ImportTemplate",
+                                "value": "@concat('\"', outputs('ElementID3'), '\":', string(outputs('Add-selectedCreationType2')), ',')"
+                              }
+                            }
+                          }
+                        },
+                        "Flow": {
+                          "case": "Microsoft.Flow/flows",
+                          "actions": {
+                            "Add-selectedCreationType3": {
+                              "runAfter": {},
+                              "metadata": {
+                                "operationMetadataId": "70652745-0f22-4444-bad3-44bf23356507"
+                              },
+                              "type": "Compose",
+                              "inputs": "@addProperty(outputs('ResourceJSON3'), 'selectedCreationType', 'New')"
+                            },
+                            "Append_to_string_variable_8": {
+                              "runAfter": {
+                                "Add-selectedCreationType3": [
+                                  "Succeeded"
+                                ]
+                              },
+                              "metadata": {
+                                "operationMetadataId": "e4651317-d7cf-44b1-a75a-db7b7ba6272f"
+                              },
+                              "type": "AppendToStringVariable",
+                              "inputs": {
+                                "name": "ImportTemplate",
+                                "value": "@concat('\"', outputs('ElementID3'), '\":', string(outputs('Add-selectedCreationType3')), ',')"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "default": {
+                        "actions": {}
+                      },
+                      "expression": "@outputs('ResourceJSON3')['type']",
+                      "metadata": {
+                        "operationMetadataId": "5cd18eb7-5ef4-48ea-8cbe-fc4822f8824d"
+                      },
+                      "type": "Switch"
+                    }
+                  },
+                  "runAfter": {
+                    "GetResourcesXML": [
+                      "Succeeded"
+                    ]
+                  },
+                  "metadata": {
+                    "operationMetadataId": "2a5586a1-8737-45a7-b063-3dffad6b84ed"
+                  },
+                  "type": "Foreach"
+                },
+                "Set-CreatedTime": {
+                  "runAfter": {
+                    "LoopResources": [
+                      "Succeeded"
+                    ]
+                  },
+                  "metadata": {
+                    "operationMetadataId": "1e947f9a-2cb2-4a95-bd21-8bd60dc172e5"
+                  },
+                  "type": "Compose",
+                  "inputs": "@replace(variables('ImportTemplate'), '###CREATEDTIME###', body('ListImportOperation')?['properties/details/createdTime'])"
+                },
+                "Set-PackageLink": {
+                  "runAfter": {
+                    "Set-CreatedTime": [
+                      "Succeeded"
+                    ]
+                  },
+                  "metadata": {
+                    "operationMetadataId": "e49f4957-4032-4dd9-b99f-8eb15fe88abd"
+                  },
+                  "type": "Compose",
+                  "inputs": "@replace(outputs('Set-CreatedTime'), '###PACKAGELINK###', body('ListImportOperation')?['properties/packageLink/value'])"
+                },
+                "Set-PackageTelemetryID": {
+                  "runAfter": {
+                    "Set-PackageLink": [
+                      "Succeeded"
+                    ]
+                  },
+                  "metadata": {
+                    "operationMetadataId": "138ce014-ad24-4de7-92c2-7b13b04d7d0d"
+                  },
+                  "type": "Compose",
+                  "inputs": "@replace(outputs('Set-PackageLink'), '###PACKAGETELEMETRYID###', body('ListImportOperation')?['properties/details/packageTelemetryId'])"
+                }
+              },
+              "runAfter": {
+                "Parse-ListImportOperation": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "5a8f5977-3b3a-4eb6-b9a1-0caf1e88d168"
+              },
+              "type": "Scope",
+              "description": "Map current flow connection IDs to package internal ID (guid) to be able to later replace connection ID with selected connection of target environment"
+            },
+            "ValidateImportPackage": {
+              "runAfter": {
+                "ModifyImportJSON": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "98976a6f-6f2c-4e41-b940-5255ada06854"
+              },
+              "type": "OpenApiConnection",
+              "inputs": {
+                "host": {
+                  "connectionName": "shared_migrate-20canvas-20apps-5fb1c7f5321b570664-5f5aadce8b365dea81_1",
+                  "operationId": "ValidateImportPackage",
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_migrate-20canvas-20apps-5fb1c7f5321b570664-5f5aadce8b365dea81"
+                },
+                "parameters": {
+                  "EnvironmentID": "@outputs('Get-MigrationJob')?['body/powciti_targetenvironmentid']",
+                  "api-version": "2016-11-01",
+                  "body": "@json(concat(substring(string(outputs('Set-PackageTelemetryID')), 0, sub(length(string(outputs('Set-PackageTelemetryID'))), 1)), '}}'))"
+                },
+                "authentication": "@parameters('$authentication')"
+              }
+            },
+            "Parse-ValidateImportPackage": {
+              "runAfter": {
+                "ValidateImportPackage": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "6922baa5-0d69-487c-9a69-9cdcebee9254"
+              },
+              "type": "ParseJson",
+              "inputs": {
+                "content": "@body('ValidateImportPackage')",
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "packageLink": {
+                      "type": "object",
+                      "properties": {
+                        "value": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "details": {
+                      "type": "object",
+                      "properties": {
+                        "displayName": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        },
+                        "createdTime": {
+                          "type": "string"
+                        },
+                        "packageTelemetryId": {
+                          "type": "string"
+                        },
+                        "creator": {
+                          "type": "string"
+                        },
+                        "sourceEnvironment": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "code": {
+                            "type": "string"
+                          },
+                          "message": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "ValidationSucceded": {
+              "actions": {
+                "Set-MigrationStatus-Success": {
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "2cbffc3e-da4b-4e74-abca-4de2a26fe3fe"
+                  },
+                  "type": "SetVariable",
+                  "inputs": {
+                    "name": "MigrationStatus",
+                    "value": "Success"
+                  }
+                },
+                "Set-MigrationMessage-Success": {
+                  "runAfter": {
+                    "Set-MigrationStatus-Success": [
+                      "Succeeded"
+                    ]
+                  },
+                  "metadata": {
+                    "operationMetadataId": "9fa3ea3b-9112-4f1e-ae1c-4d5a8c732706"
+                  },
+                  "type": "SetVariable",
+                  "inputs": {
+                    "name": "MigrationMessage",
+                    "value": "Package validation succeeded"
+                  }
+                }
+              },
+              "runAfter": {
+                "Parse-ValidateImportPackage": [
+                  "Succeeded"
+                ]
+              },
+              "else": {
+                "actions": {
+                  "Validation-FAILED": {
+                    "actions": {
+                      "Set-MigrationStatus-Validation": {
+                        "runAfter": {},
+                        "metadata": {
+                          "operationMetadataId": "9c4c2cb8-80fb-4c30-92be-81007550c310"
+                        },
+                        "type": "SetVariable",
+                        "inputs": {
+                          "name": "MigrationStatus",
+                          "value": "Failed"
+                        }
+                      },
+                      "LoopErrorMessages": {
+                        "foreach": "@body('Parse-ValidateImportPackage')?['errors']",
+                        "actions": {
+                          "AppendErrorMessage": {
+                            "runAfter": {},
+                            "metadata": {
+                              "operationMetadataId": "7e55f3f7-5490-4711-8cf1-c54bc0bc3fc2"
+                            },
+                            "type": "AppendToStringVariable",
+                            "inputs": {
+                              "name": "MigrationMessage",
+                              "value": "@concat(items('LoopErrorMessages')?['message'], ';')"
+                            }
+                          }
+                        },
+                        "runAfter": {
+                          "Set-MigrationStatus-Validation": [
+                            "Succeeded"
+                          ]
+                        },
+                        "metadata": {
+                          "operationMetadataId": "3c5cc624-0440-46ad-b7b6-c1665a13026e"
+                        },
+                        "type": "Foreach"
+                      },
+                      "Set-MigrationCompleted-Validation": {
+                        "runAfter": {
+                          "LoopErrorMessages": [
+                            "Succeeded"
+                          ]
+                        },
+                        "metadata": {
+                          "operationMetadataId": "cabc8170-1f57-450d-aaae-cc86a1ffcd91"
+                        },
+                        "type": "SetVariable",
+                        "inputs": {
+                          "name": "MigrationCompleted",
+                          "value": "@false"
+                        }
+                      }
+                    },
+                    "runAfter": {},
+                    "metadata": {
+                      "operationMetadataId": "bac3df81-e67d-42e3-a75a-f1a8bc836027"
+                    },
+                    "type": "Scope"
+                  }
+                }
+              },
+              "expression": {
+                "equals": [
+                  "@body('Parse-ValidateImportPackage')?['status']",
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "09a175d9-d336-4d19-b152-ecb6b5b18d32"
+              },
+              "type": "If"
+            }
+          },
+          "runAfter": {
+            "FlowConnections": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "8ac59acd-2dbc-469d-95c9-6e117687eb74"
+          },
+          "type": "Scope"
+        },
+        "ErrorHandling": {
+          "actions": {
+            "Set-MigrationStatus-Failed": {
+              "runAfter": {},
+              "metadata": {
+                "operationMetadataId": "9c4c2cb8-80fb-4c30-92be-81007550c310"
+              },
+              "type": "SetVariable",
+              "inputs": {
+                "name": "MigrationStatus",
+                "value": "Failed"
+              }
+            },
+            "Set-MigrationMessage-Failed": {
+              "runAfter": {
+                "Set-MigrationStatus-Failed": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "ed12bdfb-eaa2-4ba9-82d4-8dae8e0a36d7"
+              },
+              "type": "SetVariable",
+              "inputs": {
+                "name": "MigrationMessage",
+                "value": "App package validation step failed"
+              }
+            },
+            "Set-MigrationCompleted-Failed": {
+              "runAfter": {
+                "Set-MigrationMessage-Failed": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "e43f8002-1583-459f-8d5c-a4d4d2651879"
+              },
+              "type": "SetVariable",
+              "inputs": {
+                "name": "MigrationCompleted",
+                "value": "@false"
+              }
+            }
+          },
+          "runAfter": {
+            "PackageValidation": [
+              "Failed"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "b290159e-973e-4e5b-9ccf-848824f83e08"
+          },
+          "type": "Scope"
+        }
+      }
+    },
+    "templateName": ""
+  },
+  "schemaVersion": "1.0.0.0"
+}

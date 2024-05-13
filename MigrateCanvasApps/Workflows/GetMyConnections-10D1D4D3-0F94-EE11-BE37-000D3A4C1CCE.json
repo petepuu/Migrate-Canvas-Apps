@@ -1,0 +1,265 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_flowmanagement_1": {
+        "runtimeSource": "invoker",
+        "connection": {
+          "connectionReferenceLogicalName": "powciti_sharedflowmanagement_80cd5"
+        },
+        "api": {
+          "name": "shared_flowmanagement"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        },
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        }
+      },
+      "triggers": {
+        "manual": {
+          "metadata": {
+            "operationMetadataId": "b6fd2b52-fb70-4728-bae5-067c8aee7f4d"
+          },
+          "type": "Request",
+          "kind": "PowerAppV2",
+          "inputs": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "title": "EnvironmentID",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "Please enter your input",
+                  "x-ms-content-hint": "TEXT"
+                }
+              },
+              "required": [
+                "text"
+              ]
+            }
+          }
+        }
+      },
+      "actions": {
+        "List_My_Connections": {
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "2bfa9836-dae8-4035-b285-0f5b2ebff309"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_flowmanagement_1",
+              "operationId": "ListConnections",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_flowmanagement"
+            },
+            "parameters": {
+              "environmentName": "@triggerBody()['text']"
+            },
+            "authentication": "@parameters('$authentication')"
+          },
+          "runtimeConfiguration": {
+            "paginationPolicy": {
+              "minimumItemCount": 1000
+            }
+          }
+        },
+        "Respond_to_a_PowerApp_or_flow": {
+          "runAfter": {
+            "SelectNeededProperties": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "777bf49c-74ca-455c-96e9-352744a4c01b"
+          },
+          "type": "Response",
+          "kind": "PowerApp",
+          "inputs": {
+            "statusCode": 200,
+            "body": {
+              "myconnections": "@{outputs('SelectNeededProperties')}"
+            },
+            "schema": {
+              "type": "object",
+              "properties": {
+                "myconnections": {
+                  "title": "MyConnections",
+                  "x-ms-dynamically-added": true,
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "ParseConnections": {
+          "runAfter": {
+            "List_My_Connections": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "116690fd-75e5-464d-9607-c97ff5e8264c"
+          },
+          "type": "ParseJson",
+          "inputs": {
+            "content": "@outputs('List_My_Connections')?['body/value']",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "id": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "properties": {
+                    "type": "object",
+                    "properties": {
+                      "apiId": {
+                        "type": "string"
+                      },
+                      "displayName": {
+                        "type": "string"
+                      },
+                      "iconUri": {
+                        "type": "string"
+                      },
+                      "statuses": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "status": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "status"
+                          ]
+                        }
+                      },
+                      "connectionParameters": {
+                        "type": "object",
+                        "properties": {
+                          "sku": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "keywordsRemaining": {
+                        "type": "integer"
+                      },
+                      "createdBy": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "displayName": {
+                            "type": "string"
+                          },
+                          "email": {
+                            "type": "string"
+                          },
+                          "type": {
+                            "type": "string"
+                          },
+                          "tenantId": {
+                            "type": "string"
+                          },
+                          "userPrincipalName": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "createdTime": {
+                        "type": "string"
+                      },
+                      "lastModifiedTime": {
+                        "type": "string"
+                      },
+                      "environment": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "allowSharing": {
+                        "type": "boolean"
+                      }
+                    }
+                  }
+                },
+                "required": [
+                  "name",
+                  "id",
+                  "type",
+                  "properties"
+                ]
+              }
+            }
+          }
+        },
+        "FilterConnected": {
+          "runAfter": {
+            "ParseConnections": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "b76cc814-2d7c-4d2e-bca4-6415fe8ba9c9"
+          },
+          "type": "Query",
+          "inputs": {
+            "from": "@body('ParseConnections')",
+            "where": "@equals(item()['properties/statuses'][0]?['status'], 'Connected')"
+          }
+        },
+        "SelectNeededProperties": {
+          "runAfter": {
+            "FilterConnected": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "57b836ec-d225-4f3f-a5a8-ff0bcfe41472"
+          },
+          "type": "Select",
+          "inputs": {
+            "from": "@body('FilterConnected')",
+            "select": {
+              "ID": "@item()?['name']",
+              "Name": "@item()?['properties']?['displayName']",
+              "CreatedTime": "@item()?['properties']?['createdTime']",
+              "NameAndCreated": "@concat(item()?['properties']?['displayName'], ' (', formatDateTime(item()?['properties']?['createdTime'], 'dd/MM/yyyy hh:mm:ss'), ')')",
+              "ConnectorType": "@substring(item()?['properties']?['apiId'], add(lastIndexOf(item()?['properties']?['apiId'], '/'), 1))"
+            }
+          }
+        }
+      }
+    },
+    "templateName": ""
+  },
+  "schemaVersion": "1.0.0.0"
+}

@@ -1,0 +1,997 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_office365users_1": {
+        "runtimeSource": "invoker",
+        "connection": {
+          "connectionReferenceLogicalName": "powciti_Office365Users"
+        },
+        "api": {
+          "name": "shared_office365users"
+        }
+      },
+      "shared_migrate-20canvas-20apps-5fb1c7f5321b570664-5f5aadce8b365dea81_1": {
+        "runtimeSource": "invoker",
+        "connection": {
+          "connectionReferenceLogicalName": "powciti_MigrateCanvasAppsConnector"
+        },
+        "api": {
+          "name": "shared_migrate-20canvas-20apps-5fb1c7f5321b570664-5f5aadce8b365dea81",
+          "logicalName": "powciti_migrate-20canvas-20apps"
+        }
+      },
+      "shared_commondataserviceforapps_1": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "powciti_sharedcommondataserviceforapps_4cf94"
+        },
+        "api": {
+          "name": "shared_commondataserviceforapps"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        },
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        }
+      },
+      "triggers": {
+        "manual": {
+          "metadata": {
+            "operationMetadataId": "085678c6-c25c-49db-9450-68b93dd34d85"
+          },
+          "type": "Request",
+          "kind": "PowerAppV2",
+          "inputs": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "title": "SourceEnvironmentID",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "Please enter your input",
+                  "x-ms-content-hint": "TEXT"
+                },
+                "text_1": {
+                  "title": "TargetEnvironmentID",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "Please enter your input",
+                  "x-ms-content-hint": "TEXT"
+                },
+                "text_2": {
+                  "title": "AppID",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "Please enter your input",
+                  "x-ms-content-hint": "TEXT"
+                },
+                "text_3": {
+                  "title": "SourceEnvironmentName",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "Please enter your input",
+                  "x-ms-content-hint": "TEXT"
+                },
+                "text_4": {
+                  "title": "AppName",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "Please enter your input",
+                  "x-ms-content-hint": "TEXT"
+                },
+                "text_5": {
+                  "title": "FlowConnections",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "Please enter your input",
+                  "x-ms-content-hint": "TEXT"
+                }
+              },
+              "required": [
+                "text",
+                "text_1",
+                "text_2",
+                "text_3",
+                "text_4",
+                "text_5"
+              ]
+            }
+          }
+        }
+      },
+      "actions": {
+        "ExportTemplate": {
+          "runAfter": {
+            "ResourceTemp": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "4da3b1ac-dbc7-4f1c-9082-593e736aa61a"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "ExportTemplate",
+                "type": "string",
+                "value": "{\n  \"includedResourceIds\": [###RESOURCEIDS###],\n  \"details\": {\n    \"displayName\": \"@{triggerBody()['text_4']}\",\n    \"description\": \"\",\n    \"creator\": \"@{outputs('Get_my_profile_(V2)')?['body/displayName']}\",\n    \"sourceEnvironment\": \"@{triggerBody()['text_3']}\"\n  },\n  \"resources\": {"
+              }
+            ]
+          }
+        },
+        "Get_my_profile_(V2)": {
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "9d7ee3d9-7960-4b45-85a6-8d79b7e58045"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_office365users_1",
+              "operationId": "MyProfile_V2",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_office365users"
+            },
+            "parameters": {},
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "ResourceTemp": {
+          "runAfter": {
+            "MigrationMessage": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "d18a8e25-e9ba-4bef-89bc-3b6d98b299e6"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "ResourceTemp",
+                "type": "object",
+                "value": {}
+              }
+            ]
+          }
+        },
+        "ResourceIds": {
+          "runAfter": {
+            "ImportTemplate": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "905d71d5-36ca-48ab-9631-db8f47bc1e47"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "ResourceIds",
+                "type": "array"
+              }
+            ]
+          }
+        },
+        "MigrationStatus": {
+          "runAfter": {
+            "Get_my_profile_(V2)": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "edf3adc1-9da6-4488-be1c-50637dfc51e0"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "MigrationStatus",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "MigrationMessage": {
+          "runAfter": {
+            "MigrationStatus": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "ce506b91-a4c5-4cec-b9ca-b7963da9caba"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "MigrationMessage",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "FlowConnections": {
+          "runAfter": {
+            "ResourceIds": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "af7c2f43-48e0-4bcb-bd15-a1a62ea49d9f"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "FlowConnections",
+                "type": "array"
+              }
+            ]
+          }
+        },
+        "TempFlowConnections": {
+          "runAfter": {
+            "FlowConnections": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "845eb9f5-9431-40d9-822a-ac7a4e430bd7"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "TempFlowConnections",
+                "type": "array",
+                "value": "@json(triggerBody()['text_5'])"
+              }
+            ]
+          }
+        },
+        "ImportTemplate": {
+          "runAfter": {
+            "ExportTemplate": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "f0c8247b-271d-455b-abb8-3b4980fc4f36"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "ImportTemplate",
+                "type": "string",
+                "value": "{\n  \"status\": \"Succeeded\",\n    \"packageLink\": {\n        \"value\": \"###PACKAGELINK###\"\n    },\n  \"details\": {\n    \"displayName\": \"@{triggerBody()['text_4']}\",\n    \"description\": \"\",\n    \"createdTime\": \"###CREATEDTIME###\",\n    \"packageTelemetryId\": \"###PACKAGETELEMETRYID###\",\n    \"creator\": \"@{outputs('Get_my_profile_(V2)')?['body/displayName']}\",\n    \"sourceEnvironment\": \"@{triggerBody()['text_3']}\"\n  },\n  \"resources\": {"
+              }
+            ]
+          }
+        },
+        "Respond_to_a_PowerApp_or_flow_2": {
+          "runAfter": {
+            "SuccessHandling": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "efaa2f4a-0529-47d2-9cc8-3b4b8250007c"
+          },
+          "type": "Response",
+          "kind": "PowerApp",
+          "inputs": {
+            "statusCode": 200,
+            "body": {
+              "status": "@variables('MigrationStatus')",
+              "message": "@variables('MigrationMessage')",
+              "migrationjobid": "@outputs('AddNewMigrationJob')?['body/powciti_migrationjobid']",
+              "completed": "@{false}"
+            },
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "title": "status",
+                  "x-ms-dynamically-added": true,
+                  "type": "string"
+                },
+                "message": {
+                  "title": "Message",
+                  "x-ms-dynamically-added": true,
+                  "type": "string"
+                },
+                "migrationjobid": {
+                  "title": "MigrationJobID",
+                  "x-ms-dynamically-added": true,
+                  "type": "string"
+                },
+                "completed": {
+                  "title": "Completed",
+                  "x-ms-dynamically-added": true,
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "Export": {
+          "actions": {
+            "ListPackageResources": {
+              "runAfter": {},
+              "metadata": {
+                "operationMetadataId": "b2cdfc24-03e6-4749-b805-507c69496e52"
+              },
+              "type": "OpenApiConnection",
+              "inputs": {
+                "host": {
+                  "connectionName": "shared_migrate-20canvas-20apps-5fb1c7f5321b570664-5f5aadce8b365dea81_1",
+                  "operationId": "ListPackageResources",
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_migrate-20canvas-20apps-5fb1c7f5321b570664-5f5aadce8b365dea81"
+                },
+                "parameters": {
+                  "EnvironmentID": "@triggerBody()['text']",
+                  "api-version": "2016-11-01",
+                  "body": "{\n    \"baseResourceIds\": [\n        \"/providers/Microsoft.PowerApps/apps/@{triggerBody()['text_2']}\"\n    ]\n}"
+                },
+                "authentication": "@parameters('$authentication')"
+              }
+            },
+            "XML": {
+              "runAfter": {
+                "ListPackageResources": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "aaca7905-183c-48cb-8fcb-cd1a14896d64"
+              },
+              "type": "Compose",
+              "inputs": "@xml(json(concat('{\"root\": { resources:', body('ListPackageResources')?['resources'], '}}')))"
+            },
+            "Apply_to_each": {
+              "foreach": "@xpath(outputs('XML'), '//resources/*')",
+              "actions": {
+                "Switch": {
+                  "runAfter": {
+                    "AppendResourceId": [
+                      "Succeeded"
+                    ]
+                  },
+                  "cases": {
+                    "App": {
+                      "case": "Microsoft.PowerApps/apps",
+                      "actions": {
+                        "Remove-hierarchy": {
+                          "runAfter": {},
+                          "metadata": {
+                            "operationMetadataId": "f51945d2-588a-44a2-abc7-ee8b9c211efa"
+                          },
+                          "type": "Compose",
+                          "inputs": "@removeProperty(outputs('ResourceJSON'), 'hierarchy')"
+                        },
+                        "Add-suggestedCreationType": {
+                          "runAfter": {
+                            "Remove-hierarchy": [
+                              "Succeeded"
+                            ]
+                          },
+                          "metadata": {
+                            "operationMetadataId": "763b6bde-e0a2-4716-b25b-90d35dec9d49"
+                          },
+                          "type": "Compose",
+                          "inputs": "@addProperty(outputs('Remove-hierarchy'), 'suggestedCreationType', 'New')"
+                        },
+                        "ModifiedResource": {
+                          "runAfter": {
+                            "Add-suggestedCreationType": [
+                              "Succeeded"
+                            ]
+                          },
+                          "metadata": {
+                            "operationMetadataId": "fa146131-a46e-442a-8dfc-98624178e488"
+                          },
+                          "type": "Compose",
+                          "inputs": "@addProperty(variables('ResourceTemp'), outputs('ElementID'), outputs('Add-suggestedCreationType'))"
+                        },
+                        "Append_to_string_variable": {
+                          "runAfter": {
+                            "ModifiedResource": [
+                              "Succeeded"
+                            ]
+                          },
+                          "metadata": {
+                            "operationMetadataId": "ddeed58b-3138-45c8-acd9-b91c6ea443a4"
+                          },
+                          "type": "AppendToStringVariable",
+                          "inputs": {
+                            "name": "ExportTemplate",
+                            "value": "@concat('\"', outputs('ElementID'), '\":', outputs('Add-suggestedCreationType'),',')"
+                          }
+                        }
+                      }
+                    },
+                    "Connection": {
+                      "case": "Microsoft.PowerApps/apis",
+                      "actions": {
+                        "Add-suggestedCreationType2": {
+                          "runAfter": {},
+                          "metadata": {
+                            "operationMetadataId": "e466e0f4-5355-42e0-a26d-079282b75cd5"
+                          },
+                          "type": "Compose",
+                          "inputs": "@addProperty(outputs('ResourceJSON'), 'suggestedCreationType', 'Existing')"
+                        },
+                        "ModifiedResource2": {
+                          "runAfter": {
+                            "Add-suggestedCreationType2": [
+                              "Succeeded"
+                            ]
+                          },
+                          "metadata": {
+                            "operationMetadataId": "0d235441-8180-45ab-8bb7-b52f4f17954e"
+                          },
+                          "type": "Compose",
+                          "inputs": "@addProperty(variables('ResourceTemp'), outputs('ElementID'), outputs('Add-suggestedCreationType2'))"
+                        },
+                        "Append_to_string_variable_2": {
+                          "runAfter": {
+                            "ModifiedResource2": [
+                              "Succeeded"
+                            ]
+                          },
+                          "metadata": {
+                            "operationMetadataId": "335b11a1-ef47-4964-b9ca-9e26cc7cbbd4"
+                          },
+                          "type": "AppendToStringVariable",
+                          "inputs": {
+                            "name": "ExportTemplate",
+                            "value": "@concat('\"', outputs('ElementID'), '\":', outputs('Add-suggestedCreationType2'),',')"
+                          }
+                        }
+                      }
+                    },
+                    "Flow": {
+                      "case": "Microsoft.Flow/flows",
+                      "actions": {
+                        "Add-suggestedCreationType3": {
+                          "runAfter": {},
+                          "metadata": {
+                            "operationMetadataId": "d793b931-d63a-48d5-b770-26c6941a2b03"
+                          },
+                          "type": "Compose",
+                          "inputs": "@addProperty(outputs('ResourceJSON'), 'suggestedCreationType', 'New')"
+                        },
+                        "Append_to_string_variable_3": {
+                          "runAfter": {
+                            "Add-suggestedCreationType3": [
+                              "Succeeded"
+                            ]
+                          },
+                          "metadata": {
+                            "operationMetadataId": "003507ec-4a01-4829-ac8a-29f2b2091336"
+                          },
+                          "type": "AppendToStringVariable",
+                          "inputs": {
+                            "name": "ExportTemplate",
+                            "value": "@concat('\"', outputs('ElementID'), '\":', outputs('Add-suggestedCreationType3'),',')"
+                          }
+                        }
+                      }
+                    },
+                    "Flow_Connection": {
+                      "case": "Microsoft.PowerApps/apis/connections",
+                      "actions": {
+                        "Add-suggestedCreationType4": {
+                          "runAfter": {},
+                          "metadata": {
+                            "operationMetadataId": "b35bb85f-0fc2-4fb4-bc29-dc9b94e619eb"
+                          },
+                          "type": "Compose",
+                          "inputs": "@addProperty(outputs('ResourceJSON'), 'suggestedCreationType', 'Existing')"
+                        },
+                        "Append_to_string_variable_4": {
+                          "runAfter": {
+                            "Add-suggestedCreationType4": [
+                              "Succeeded"
+                            ]
+                          },
+                          "metadata": {
+                            "operationMetadataId": "9e229f0c-efb9-47e0-b6ce-d2f4cdb89d58"
+                          },
+                          "type": "AppendToStringVariable",
+                          "inputs": {
+                            "name": "ExportTemplate",
+                            "value": "@concat('\"', outputs('ElementID'), '\":', outputs('Add-suggestedCreationType4'),',')"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "default": {
+                    "actions": {}
+                  },
+                  "expression": "@first(xpath(item(), '//type/text()'))",
+                  "metadata": {
+                    "operationMetadataId": "9a026133-a798-4e48-98c7-11e9b6a8270f"
+                  },
+                  "type": "Switch"
+                },
+                "XMLtoJSON": {
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "67c20391-9050-4458-940f-580cf3da1191"
+                  },
+                  "type": "Compose",
+                  "inputs": "@json(item())",
+                  "description": "Convert Resource node to JSON"
+                },
+                "ElementID": {
+                  "runAfter": {
+                    "XMLtoJSON": [
+                      "Succeeded"
+                    ]
+                  },
+                  "metadata": {
+                    "operationMetadataId": "5faecf25-07f7-4045-b6df-e6b0f34079f7"
+                  },
+                  "type": "Compose",
+                  "inputs": "@substring(string(outputs('XMLtoJSON')), 2, sub(indexOf(string(outputs('XMLtoJSON')), ':'),3))",
+                  "description": "Parse internal resource id (root node name)"
+                },
+                "AppendResourceId": {
+                  "runAfter": {
+                    "ResourceJSON": [
+                      "Succeeded"
+                    ]
+                  },
+                  "metadata": {
+                    "operationMetadataId": "16901578-4257-4f27-baf4-f9a91bd56670"
+                  },
+                  "type": "AppendToArrayVariable",
+                  "inputs": {
+                    "name": "ResourceIds",
+                    "value": "@concat('\"', first(xpath(item(), '//id/text()')), '\"')"
+                  }
+                },
+                "ResourceJSON": {
+                  "runAfter": {
+                    "ElementID": [
+                      "Succeeded"
+                    ]
+                  },
+                  "metadata": {
+                    "operationMetadataId": "67c20391-9050-4458-940f-580cf3da1191"
+                  },
+                  "type": "Compose",
+                  "inputs": "@body('ListPackageResources')['resources'][outputs('ElementID')]",
+                  "description": "Get Resource from JSON returned by List Package Resources using internal resource ID"
+                }
+              },
+              "runAfter": {
+                "XML": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "f5985530-4d81-4fac-a446-813698ed4775"
+              },
+              "type": "Foreach"
+            },
+            "Set-ResourceIds": {
+              "runAfter": {
+                "Apply_to_each": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "fbeea56a-71da-4f91-bf38-7c279b407e70"
+              },
+              "type": "Compose",
+              "inputs": "@replace(variables('ExportTemplate'), '###RESOURCEIDS###', join(variables('ResourceIds'), ','))"
+            },
+            "ExportPackage": {
+              "runAfter": {
+                "Set-ResourceIds": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "95809ad1-a60d-424f-9be2-356759697ef0"
+              },
+              "type": "OpenApiConnection",
+              "inputs": {
+                "host": {
+                  "connectionName": "shared_migrate-20canvas-20apps-5fb1c7f5321b570664-5f5aadce8b365dea81_1",
+                  "operationId": "ExportPackage",
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_migrate-20canvas-20apps-5fb1c7f5321b570664-5f5aadce8b365dea81"
+                },
+                "parameters": {
+                  "EnvironmentID": "@triggerBody()['text']",
+                  "api-version": "2016-11-01",
+                  "body": "@json(concat(substring(outputs('Set-ResourceIds'), 0, sub(length(outputs('Set-ResourceIds')), 1)), '}}'))"
+                },
+                "authentication": "@parameters('$authentication')"
+              },
+              "operationOptions": "DisableAsyncPattern"
+            },
+            "ParseExport": {
+              "runAfter": {
+                "ExportPackage": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "045b6ed8-ad8e-41f3-9542-bfa36d76428b"
+              },
+              "type": "ParseJson",
+              "inputs": {
+                "content": "@outputs('ExportPackage')",
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "headers": {
+                      "type": "object",
+                      "properties": {
+                        "Cache-Control": {
+                          "type": "string"
+                        },
+                        "Location": {
+                          "type": "string"
+                        },
+                        "Retry-After": {
+                          "type": "string"
+                        },
+                        "Strict-Transport-Security": {
+                          "type": "string"
+                        },
+                        "x-ms-islandgateway": {
+                          "type": "string"
+                        },
+                        "x-ms-request-id": {
+                          "type": "string"
+                        },
+                        "x-ms-correlation-request-id": {
+                          "type": "string"
+                        },
+                        "x-ms-correlation-id": {
+                          "type": "string"
+                        },
+                        "Server-Timing": {
+                          "type": "string"
+                        },
+                        "X-Content-Type-Options": {
+                          "type": "string"
+                        },
+                        "x-ms-service-request-id": {
+                          "type": "string"
+                        },
+                        "x-ms-activity-vector": {
+                          "type": "string"
+                        },
+                        "x-ms-apihub-cached-response": {
+                          "type": "string"
+                        },
+                        "x-ms-apihub-obo": {
+                          "type": "string"
+                        },
+                        "Date": {
+                          "type": "string"
+                        },
+                        "Content-Length": {
+                          "type": "string"
+                        },
+                        "Content-Type": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "body": {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "string"
+                        },
+                        "details": {
+                          "type": "object",
+                          "properties": {
+                            "displayName": {
+                              "type": "string"
+                            },
+                            "description": {
+                              "type": "string"
+                            },
+                            "packageTelemetryId": {
+                              "type": "string"
+                            },
+                            "creator": {
+                              "type": "string"
+                            },
+                            "sourceEnvironment": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "BuildFlowConnectionIDArray": {
+              "actions": {
+                "GetResources": {
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "d8f5a89c-c542-4f71-a38d-b46dba9dae7f"
+                  },
+                  "type": "Compose",
+                  "inputs": "@xml(json(concat('{\"root\": { resources:', body('ExportPackage')?['resources'], '}}')))"
+                },
+                "LoopOnlyFlowConnections": {
+                  "foreach": "@xpath(outputs('GetResources'), '/root/resources/*/type[text()=\"Microsoft.PowerApps/apis/connections\"]/..')",
+                  "actions": {
+                    "XMLtoJSON2": {
+                      "runAfter": {},
+                      "metadata": {
+                        "operationMetadataId": "5cc7c5b8-34b8-4f00-93f4-0717c7b19a39"
+                      },
+                      "type": "Compose",
+                      "inputs": "@json(item())"
+                    },
+                    "ElementID2": {
+                      "runAfter": {
+                        "XMLtoJSON2": [
+                          "Succeeded"
+                        ]
+                      },
+                      "metadata": {
+                        "operationMetadataId": "800030ff-9c5b-48e0-92c9-54991d4f8d72"
+                      },
+                      "type": "Compose",
+                      "inputs": "@substring(string(outputs('XMLtoJSON2')), 2, sub(indexOf(string(outputs('XMLtoJSON2')), ':'),3))"
+                    },
+                    "ResourceJSON2": {
+                      "runAfter": {
+                        "ElementID2": [
+                          "Succeeded"
+                        ]
+                      },
+                      "metadata": {
+                        "operationMetadataId": "e791dec2-90d5-4c02-ac5e-39090f357062"
+                      },
+                      "type": "Compose",
+                      "inputs": "@body('ExportPackage')['resources'][outputs('ElementID2')]"
+                    },
+                    "CurrentFlowResourceID": {
+                      "runAfter": {
+                        "ResourceJSON2": [
+                          "Succeeded"
+                        ]
+                      },
+                      "metadata": {
+                        "operationMetadataId": "c646fac8-7f40-4980-b5c9-fe2d02f666da"
+                      },
+                      "type": "Compose",
+                      "inputs": "@outputs('ResourceJSON2')['name']"
+                    },
+                    "GetFlowConnectionFromVariable": {
+                      "runAfter": {
+                        "CurrentFlowResourceID": [
+                          "Succeeded"
+                        ]
+                      },
+                      "metadata": {
+                        "operationMetadataId": "e26f93bf-54b9-418b-a953-3fcc18345868"
+                      },
+                      "type": "Query",
+                      "inputs": {
+                        "from": "@variables('TempFlowConnections')",
+                        "where": "@equals(item()['Old'], outputs('CurrentFlowResourceID'))"
+                      }
+                    },
+                    "AddFlowConnectionToArray": {
+                      "runAfter": {
+                        "GetFlowConnectionFromVariable": [
+                          "Succeeded"
+                        ]
+                      },
+                      "metadata": {
+                        "operationMetadataId": "7523de23-92f2-4d5b-a72a-461781ad7f02"
+                      },
+                      "type": "AppendToArrayVariable",
+                      "inputs": {
+                        "name": "FlowConnections",
+                        "value": "@setProperty(first(body('GetFlowConnectionFromVariable')), 'FlowConnPackageID', outputs('ElementID2'))"
+                      }
+                    }
+                  },
+                  "runAfter": {
+                    "GetResources": [
+                      "Succeeded"
+                    ]
+                  },
+                  "metadata": {
+                    "operationMetadataId": "2a5586a1-8737-45a7-b063-3dffad6b84ed"
+                  },
+                  "type": "Foreach"
+                }
+              },
+              "runAfter": {
+                "ParseExport": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "5a8f5977-3b3a-4eb6-b9a1-0caf1e88d168"
+              },
+              "type": "Scope",
+              "description": "Map current flow connection IDs to package internal ID (guid) to be able to later replace connection ID with selected connection of target environment"
+            },
+            "Location": {
+              "runAfter": {
+                "BuildFlowConnectionIDArray": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "dbfcb442-d6fc-4f6b-aad1-d54506a99796"
+              },
+              "type": "Compose",
+              "inputs": "@body('ParseExport')?['headers']?['Location']"
+            },
+            "OperationID": {
+              "runAfter": {
+                "Location": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "2f27fb18-262b-4042-92c4-56b979a53f96"
+              },
+              "type": "Compose",
+              "inputs": "@last(split(substring(outputs('Location'), 0, indexOf(outputs('Location'), '?')), '/'))"
+            }
+          },
+          "runAfter": {
+            "TempFlowConnections": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "21c18a1d-2c65-41d1-a1a4-d1f1313e7791"
+          },
+          "type": "Scope"
+        },
+        "ErrorHandling": {
+          "actions": {
+            "Set-MigrationStatus-Failed": {
+              "runAfter": {},
+              "metadata": {
+                "operationMetadataId": "46828f14-bc10-484d-971b-0af470dec0ef"
+              },
+              "type": "SetVariable",
+              "inputs": {
+                "name": "MigrationStatus",
+                "value": "Failed"
+              }
+            },
+            "Set-MigrationMessage-Failed": {
+              "runAfter": {
+                "Set-MigrationStatus-Failed": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "9578bc9b-cfb1-4e20-a637-21217dbb9ff9"
+              },
+              "type": "SetVariable",
+              "inputs": {
+                "name": "MigrationMessage",
+                "value": "Exporting app failed"
+              }
+            }
+          },
+          "runAfter": {
+            "Export": [
+              "Failed"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "d8134154-a87d-4dad-8b08-ccc1ee9f0a6e"
+          },
+          "type": "Scope"
+        },
+        "SuccessHandling": {
+          "actions": {
+            "Set-MigrationStatus-Success": {
+              "runAfter": {},
+              "metadata": {
+                "operationMetadataId": "046da90e-cb82-4387-90e6-a8fb43f4d8af"
+              },
+              "type": "SetVariable",
+              "inputs": {
+                "name": "MigrationStatus",
+                "value": "Success"
+              }
+            },
+            "Set-MigrationMessage-Success": {
+              "runAfter": {
+                "Set-MigrationStatus-Success": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "356a0f40-33fe-49ef-9596-81b4fdcea0be"
+              },
+              "type": "SetVariable",
+              "inputs": {
+                "name": "MigrationMessage",
+                "value": "App exported from source environment"
+              }
+            },
+            "AddNewMigrationJob": {
+              "runAfter": {
+                "Set-MigrationMessage-Success": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "e71d76e1-f446-4e00-906b-837bd3d0dbd8"
+              },
+              "type": "OpenApiConnection",
+              "inputs": {
+                "host": {
+                  "connectionName": "shared_commondataserviceforapps_1",
+                  "operationId": "CreateRecord",
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                },
+                "parameters": {
+                  "entityName": "powciti_migrationjobs",
+                  "item/powciti_id": "@triggerBody()['text_2']",
+                  "item/powciti_appname": "@triggerBody()['text_4']",
+                  "item/powciti_exportoperationid": "@outputs('OperationID')",
+                  "item/powciti_flowconnectionmapping": "@variables('FlowConnections')",
+                  "item/powciti_migrationmessage": "@variables('MigrationMessage')",
+                  "item/powciti_migrationstatus": "@variables('MigrationStatus')",
+                  "item/powciti_migrationuser": "@outputs('Get_my_profile_(V2)')?['body/id']",
+                  "item/powciti_sourceenvironmentid": "@triggerBody()['text']",
+                  "item/powciti_sourceenvironmentname": "@triggerBody()['text_3']",
+                  "item/powciti_targetenvironmentid": "@triggerBody()['text_1']"
+                },
+                "authentication": "@parameters('$authentication')"
+              }
+            }
+          },
+          "runAfter": {
+            "ErrorHandling": [
+              "Skipped"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "3b6f80dc-1e3c-4b39-adae-4b542f6cb5b6"
+          },
+          "type": "Scope"
+        }
+      }
+    },
+    "templateName": ""
+  },
+  "schemaVersion": "1.0.0.0"
+}

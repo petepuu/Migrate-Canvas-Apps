@@ -1,0 +1,217 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_powerappsforappmakers_1": {
+        "runtimeSource": "invoker",
+        "connection": {
+          "connectionReferenceLogicalName": "powciti_sharedpowerappsforappmakers_8fba6"
+        },
+        "api": {
+          "name": "shared_powerappsforappmakers"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        },
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        }
+      },
+      "triggers": {
+        "manual": {
+          "metadata": {
+            "operationMetadataId": "25b263db-92df-4b99-8218-6ef426451347"
+          },
+          "type": "Request",
+          "kind": "PowerAppV2",
+          "inputs": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "title": "EnvironmentID",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "Please enter your input",
+                  "x-ms-content-hint": "TEXT"
+                },
+                "text_1": {
+                  "title": "AppID",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "Please enter your input",
+                  "x-ms-content-hint": "TEXT"
+                },
+                "text_2": {
+                  "title": "ObjectID",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "Please enter your input",
+                  "x-ms-content-hint": "TEXT"
+                },
+                "text_3": {
+                  "title": "Role",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "Please enter your input",
+                  "x-ms-content-hint": "TEXT"
+                },
+                "text_4": {
+                  "title": "Type",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "Please enter your input",
+                  "x-ms-content-hint": "TEXT"
+                }
+              },
+              "required": [
+                "text",
+                "text_1",
+                "text_2",
+                "text_3",
+                "text_4"
+              ]
+            }
+          }
+        }
+      },
+      "actions": {
+        "Status": {
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "8358d676-c5b9-45fe-879f-a1416818e8ff"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "Status",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "Email": {
+          "runAfter": {
+            "Status": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "c77b3ddb-50e4-4384-a57c-3ca7678703ee"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "Email",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "Edit_App_Role_Assignment": {
+          "runAfter": {
+            "Email": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "1ff8ce50-10f1-403c-b3fd-0e2536ec7bac"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_powerappsforappmakers_1",
+              "operationId": "Edit-AppRoleAssignment",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_powerappsforappmakers"
+            },
+            "parameters": {
+              "app": "@triggerBody()['text_1']",
+              "api-version": "2016-11-01",
+              "$filter": "environment eq '@{triggerBody()['text']}'",
+              "Content-Type": "application/json",
+              "body/put": [
+                {
+                  "properties/principal/id": "@triggerBody()['text_2']",
+                  "properties/principal/type": "@triggerBody()['text_4']",
+                  "properties/NotifyShareTargetOption": "false",
+                  "properties/roleName": "@triggerBody()['text_3']"
+                }
+              ]
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "Error": {
+          "runAfter": {
+            "Edit_App_Role_Assignment": [
+              "Failed"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "5375c17d-7409-400d-a452-e2d766f38f9d"
+          },
+          "type": "SetVariable",
+          "inputs": {
+            "name": "Status",
+            "value": "ERROR"
+          }
+        },
+        "Success": {
+          "runAfter": {
+            "Error": [
+              "Skipped"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "9821aa7f-be9f-4690-a2c4-4918a5a49a98"
+          },
+          "type": "SetVariable",
+          "inputs": {
+            "name": "Status",
+            "value": "SUCCESS"
+          }
+        },
+        "Respond_to_a_PowerApp_or_flow": {
+          "runAfter": {
+            "Success": [
+              "Succeeded",
+              "Skipped"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "c379f4e6-b8d9-4f24-b54a-70142ee78845"
+          },
+          "type": "Response",
+          "kind": "PowerApp",
+          "inputs": {
+            "statusCode": 200,
+            "body": {
+              "status": "@variables('Status')"
+            },
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "title": "status",
+                  "x-ms-dynamically-added": true,
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "templateName": ""
+  },
+  "schemaVersion": "1.0.0.0"
+}

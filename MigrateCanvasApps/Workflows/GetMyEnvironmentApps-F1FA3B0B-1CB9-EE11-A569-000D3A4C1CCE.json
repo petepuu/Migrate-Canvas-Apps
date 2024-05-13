@@ -1,0 +1,151 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_powerappsforappmakers_1": {
+        "runtimeSource": "invoker",
+        "connection": {
+          "connectionReferenceLogicalName": "powciti_sharedpowerappsforappmakers_8fba6"
+        },
+        "api": {
+          "name": "shared_powerappsforappmakers"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        },
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        }
+      },
+      "triggers": {
+        "manual": {
+          "metadata": {
+            "operationMetadataId": "03148846-295c-431e-90a3-b383f84e4725"
+          },
+          "type": "Request",
+          "kind": "PowerAppV2",
+          "inputs": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "title": "EnvironmentID",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "Please enter your input",
+                  "x-ms-content-hint": "TEXT"
+                },
+                "text_1": {
+                  "title": "MyObjectID",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "Please enter your input",
+                  "x-ms-content-hint": "TEXT"
+                }
+              },
+              "required": [
+                "text",
+                "text_1"
+              ]
+            }
+          }
+        }
+      },
+      "actions": {
+        "Get_Apps": {
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "8aadf9a2-dafa-4cf0-921d-55ce0638f0d5"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_powerappsforappmakers_1",
+              "operationId": "Get-Apps",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_powerappsforappmakers"
+            },
+            "parameters": {
+              "api-version": "2022-11-01",
+              "$filter": "environment eq '@{triggerBody()['text']}' and apptype eq 'ClassicCanvasApp'",
+              "$top": 500
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "Respond_to_a_PowerApp_or_flow": {
+          "runAfter": {
+            "SelectNeededProperties": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "9044a716-5184-4355-b3d2-6fdf60bca7b6"
+          },
+          "type": "Response",
+          "kind": "PowerApp",
+          "inputs": {
+            "statusCode": 200,
+            "body": {
+              "myapps": "@{body('SelectNeededProperties')}"
+            },
+            "schema": {
+              "type": "object",
+              "properties": {
+                "myapps": {
+                  "title": "MyApps",
+                  "x-ms-dynamically-added": true,
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "Filter_array": {
+          "runAfter": {
+            "Get_Apps": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "b8ceee6e-eb21-4bfb-a636-cdf34d759e72"
+          },
+          "type": "Query",
+          "inputs": {
+            "from": "@outputs('Get_Apps')?['body/value']",
+            "where": "@equals(item()?['properties/owner/id'], triggerBody()['text_1'])"
+          }
+        },
+        "SelectNeededProperties": {
+          "runAfter": {
+            "Filter_array": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "deb9b24c-e923-4448-b75f-c6f0f7ad3c65"
+          },
+          "type": "Select",
+          "inputs": {
+            "from": "@body('Filter_array')",
+            "select": {
+              "DisplayName": "@item()?['properties/displayName']",
+              "ID": "@item()?['name']",
+              "Environment": "@item()?['properties/environment/name']",
+              "Created": "@item()?['properties/createdTime']",
+              "PlayURI": "@item()?['properties/appPlayUri']"
+            }
+          }
+        }
+      }
+    },
+    "templateName": ""
+  },
+  "schemaVersion": "1.0.0.0"
+}

@@ -1,0 +1,128 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_powerappsforappmakers_1": {
+        "runtimeSource": "invoker",
+        "connection": {
+          "connectionReferenceLogicalName": "powciti_sharedpowerappsforappmakers_8fba6"
+        },
+        "api": {
+          "name": "shared_powerappsforappmakers"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        },
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        }
+      },
+      "triggers": {
+        "manual": {
+          "metadata": {
+            "operationMetadataId": "72217bbe-1f5a-4dff-9af1-403d2613362b"
+          },
+          "type": "Request",
+          "kind": "PowerAppV2",
+          "inputs": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "text_1": {
+                  "title": "AppID",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "Please enter your input",
+                  "x-ms-content-hint": "TEXT"
+                }
+              },
+              "required": [
+                "text_1"
+              ]
+            }
+          }
+        }
+      },
+      "actions": {
+        "Get_App_Role_Assignments": {
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "42aa6bbb-a6d3-4aea-9cbe-d5e6e2a8cd8b"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_powerappsforappmakers_1",
+              "operationId": "Get-AppRoleAssignment",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_powerappsforappmakers"
+            },
+            "parameters": {
+              "app": "@triggerBody()['text_1']",
+              "api-version": "2017-06-01",
+              "$top": 250
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "SelectNeededProperties": {
+          "runAfter": {
+            "Get_App_Role_Assignments": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "e2ce5303-0af9-4b29-877a-782c8d1646c3"
+          },
+          "type": "Select",
+          "inputs": {
+            "from": "@outputs('Get_App_Role_Assignments')?['body/value']",
+            "select": {
+              "Account": "@item()?['properties/principal/displayName']",
+              "Type": "@item()?['properties/principal/type']",
+              "Email": "@item()?['properties/principal/email']",
+              "Role": "@item()?['properties/roleName']",
+              "ObjectID": "@item()?['properties/principal/id']"
+            }
+          }
+        },
+        "Respond_to_a_PowerApp_or_flow": {
+          "runAfter": {
+            "SelectNeededProperties": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "90481fb6-b695-48d0-8b0c-8f68155f1df4"
+          },
+          "type": "Response",
+          "kind": "PowerApp",
+          "inputs": {
+            "statusCode": 200,
+            "body": {
+              "permissions": "@{body('SelectNeededProperties')}"
+            },
+            "schema": {
+              "type": "object",
+              "properties": {
+                "permissions": {
+                  "title": "permissions",
+                  "x-ms-dynamically-added": true,
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "templateName": ""
+  },
+  "schemaVersion": "1.0.0.0"
+}

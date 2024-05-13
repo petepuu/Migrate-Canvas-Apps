@@ -1,0 +1,266 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_migrate-20canvas-20apps-5fb1c7f5321b570664-5f5aadce8b365dea81_1": {
+        "runtimeSource": "invoker",
+        "connection": {
+          "connectionReferenceLogicalName": "powciti_MigrateCanvasAppsConnector"
+        },
+        "api": {
+          "name": "shared_migrate-20canvas-20apps-5fb1c7f5321b570664-5f5aadce8b365dea81",
+          "logicalName": "powciti_migrate-20canvas-20apps"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        },
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        }
+      },
+      "triggers": {
+        "manual": {
+          "metadata": {
+            "operationMetadataId": "b03328f3-e6f3-4b9b-9e1f-4a884c389039"
+          },
+          "type": "Request",
+          "kind": "PowerAppV2",
+          "inputs": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "title": "EnvironmentID",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "Please enter your input",
+                  "x-ms-content-hint": "TEXT"
+                },
+                "text_1": {
+                  "title": "AppID",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "Please enter your input",
+                  "x-ms-content-hint": "TEXT"
+                }
+              },
+              "required": [
+                "text",
+                "text_1"
+              ]
+            }
+          }
+        }
+      },
+      "actions": {
+        "ListPackageResources": {
+          "runAfter": {
+            "PackageResources": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "8db871bd-022b-4507-97ca-c5c74eaa50ed"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_migrate-20canvas-20apps-5fb1c7f5321b570664-5f5aadce8b365dea81_1",
+              "operationId": "ListPackageResources",
+              "apiId": ""
+            },
+            "parameters": {
+              "EnvironmentID": "@triggerBody()['text']",
+              "api-version": "2016-11-01",
+              "body": "{\n    \"baseResourceIds\": [\n        \"/providers/Microsoft.PowerApps/apps/@{triggerBody()['text_1']}\"\n    ]\n}"
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "Resources-XML": {
+          "runAfter": {
+            "ListPackageResources": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "1feb6519-efe3-480f-aed2-b304005b08fa"
+          },
+          "type": "Compose",
+          "inputs": "@xml(json(concat('{\"root\": { resources:', body('ListPackageResources')?['resources'], '}}')))"
+        },
+        "PackageResources": {
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "8f59c513-5b55-4b6c-a33f-3f136ce571d2"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "PackageResources",
+                "type": "array"
+              }
+            ]
+          }
+        },
+        "LoopResourses": {
+          "foreach": "@xpath(outputs('Resources-XML'), '//resources/*')",
+          "actions": {
+            "Resource-Type": {
+              "runAfter": {},
+              "metadata": {
+                "operationMetadataId": "ee5d1bea-7f6a-4bc8-9593-80f2cfa8fa03"
+              },
+              "type": "Compose",
+              "inputs": "@first(xpath(item(), '//type/text()'))"
+            },
+            "SkipAppResource": {
+              "actions": {
+                "DisplayName": {
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "c215a420-4d48-440e-903a-3fee09da4c2e"
+                  },
+                  "type": "Compose",
+                  "inputs": "@first(xpath(item(), '//details/displayName/text()'))"
+                },
+                "TypeName": {
+                  "runAfter": {
+                    "DisplayName": [
+                      "Succeeded"
+                    ]
+                  },
+                  "metadata": {
+                    "operationMetadataId": "65c81673-27ac-4946-9dc5-1410bdddbb63"
+                  },
+                  "type": "Compose",
+                  "inputs": "@if(equals(outputs('Resource-Type'), 'Microsoft.PowerApps/apis'), 'App Connection', if(equals(outputs('Resource-Type'), 'Microsoft.Flow/flows'), 'Cloud Flow', if(equals(outputs('Resource-Type'), 'Microsoft.PowerApps/apis/connections'), 'Flow Connection', '')))"
+                },
+                "AppendResource": {
+                  "runAfter": {
+                    "FlowConnectionType": [
+                      "Succeeded"
+                    ]
+                  },
+                  "metadata": {
+                    "operationMetadataId": "d8a18341-dfd6-4db6-acfa-fc38dd6b6066"
+                  },
+                  "type": "AppendToArrayVariable",
+                  "inputs": {
+                    "name": "PackageResources",
+                    "value": {
+                      "Type": "@{outputs('TypeName')}",
+                      "Name": "@{outputs('Name')}",
+                      "DisplayName": "@{outputs('DisplayName')}",
+                      "FlowConnectionType": "@{outputs('FlowConnectionType')}"
+                    }
+                  }
+                },
+                "FlowConnectionType": {
+                  "runAfter": {
+                    "ID": [
+                      "Succeeded"
+                    ]
+                  },
+                  "metadata": {
+                    "operationMetadataId": "cfeddc80-0221-414b-aaf9-0f1be0674991"
+                  },
+                  "type": "Compose",
+                  "inputs": "@if(equals(outputs('TypeName'), 'Flow Connection'), split(outputs('ID'), '/')[4], '')"
+                },
+                "ID": {
+                  "runAfter": {
+                    "Name": [
+                      "Succeeded"
+                    ]
+                  },
+                  "metadata": {
+                    "operationMetadataId": "289b3292-29dd-442a-9bcd-e2c97f099a0d"
+                  },
+                  "type": "Compose",
+                  "inputs": "@first(xpath(item(), '//id/text()'))"
+                },
+                "Name": {
+                  "runAfter": {
+                    "TypeName": [
+                      "Succeeded"
+                    ]
+                  },
+                  "metadata": {
+                    "operationMetadataId": "1aaa5ddb-8bae-484c-ab51-2ea506b036e1"
+                  },
+                  "type": "Compose",
+                  "inputs": "@first(xpath(item(), '//name/text()'))"
+                }
+              },
+              "runAfter": {
+                "Resource-Type": [
+                  "Succeeded"
+                ]
+              },
+              "expression": {
+                "not": {
+                  "equals": [
+                    "@outputs('Resource-Type')",
+                    "Microsoft.PowerApps/apps"
+                  ]
+                }
+              },
+              "metadata": {
+                "operationMetadataId": "d059adf5-0d4e-4bae-a0c1-71e3d803bb57"
+              },
+              "type": "If"
+            }
+          },
+          "runAfter": {
+            "Resources-XML": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "797aeb9e-e904-417a-b937-c6ea8140a891"
+          },
+          "type": "Foreach"
+        },
+        "Respond_to_a_PowerApp_or_flow": {
+          "runAfter": {
+            "LoopResourses": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "1bd86ebf-0498-4d38-b53f-1fa8e0ec500b"
+          },
+          "type": "Response",
+          "kind": "PowerApp",
+          "inputs": {
+            "statusCode": 200,
+            "body": {
+              "resources": "@{variables('PackageResources')}"
+            },
+            "schema": {
+              "type": "object",
+              "properties": {
+                "resources": {
+                  "title": "Resources",
+                  "x-ms-dynamically-added": true,
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "templateName": ""
+  },
+  "schemaVersion": "1.0.0.0"
+}

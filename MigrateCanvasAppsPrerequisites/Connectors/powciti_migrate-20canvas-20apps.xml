@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Connector xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <connectorid>0ddf224c-ca32-4d8a-8fb9-048a37bc3407</connectorid>
+  <description></description>
+  <displayname>Migrate Canvas Apps</displayname>
+  <iconbrandcolor>#007ee5</iconbrandcolor>
+  <name>powciti_migrate-20canvas-20apps</name>
+  <connectortype>1</connectortype>
+  <openapidefinition>/Connector/powciti_migrate-20canvas-20apps_openapidefinition.json</openapidefinition>
+  <connectionparameters>/Connector/powciti_migrate-20canvas-20apps_connectionparameters.json</connectionparameters>
+  <policytemplateinstances>/Connector/powciti_migrate-20canvas-20apps_policytemplateinstances.json</policytemplateinstances>
+  <iconblob>/Connector/powciti_migrate-20canvas-20apps_iconblob.Png</iconblob>
+</Connector>

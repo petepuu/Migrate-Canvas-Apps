@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ImportExportXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Entities />
+  <Roles />
+  <Workflows />
+  <FieldSecurityProfiles />
+  <Templates />
+  <EntityMaps />
+  <EntityRelationships />
+  <OrganizationSettings />
+  <optionsets />
+  <CustomControls />
+  <EntityDataProviders />
+  <CanvasApps />
+  <connectionreferences>
+    <connectionreference connectionreferencelogicalname="powciti_MigrateCanvasAppsConnector">
+      <connectionreferencedisplayname>MigrateCanvasAppsConnector</connectionreferencedisplayname>
+      <connectorid>/providers/Microsoft.PowerApps/apis/shared_migrate-20canvas-20apps-5fb1c7f5321b570664-5f5aadce8b365dea81</connectorid>
+      <customconnectorid>
+        <connectorid>0ddf224c-ca32-4d8a-8fb9-048a37bc3407</connectorid>
+      </customconnectorid>
+      <iscustomizable>1</iscustomizable>
+      <statecode>0</statecode>
+      <statuscode>1</statuscode>
+    </connectionreference>
+    <connectionreference connectionreferencelogicalname="powciti_Office365Users">
+      <connectionreferencedisplayname>Office365Users</connectionreferencedisplayname>
+      <connectorid>/providers/Microsoft.PowerApps/apis/shared_office365users</connectorid>
+      <iscustomizable>1</iscustomizable>
+      <statecode>0</statecode>
+      <statuscode>1</statuscode>
+    </connectionreference>
+    <connectionreference connectionreferencelogicalname="powciti_sharedcommondataserviceforapps_4cf94">
+      <connectionreferencedisplayname>MigrateCanvasApps-Dataverse</connectionreferencedisplayname>
+      <connectorid>/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps</connectorid>
+      <iscustomizable>1</iscustomizable>
+      <statecode>0</statecode>
+      <statuscode>1</statuscode>
+    </connectionreference>
+    <connectionreference connectionreferencelogicalname="powciti_sharedflowmanagement_80cd5">
+      <connectionreferencedisplayname>Power Automate Management</connectionreferencedisplayname>
+      <connectorid>/providers/Microsoft.PowerApps/apis/shared_flowmanagement</connectorid>
+      <iscustomizable>1</iscustomizable>
+      <statecode>0</statecode>
+      <statuscode>1</statuscode>
+    </connectionreference>
+    <connectionreference connectionreferencelogicalname="powciti_sharedpowerappsforappmakers_8fba6">
+      <connectionreferencedisplayname>Power Apps for Makers</connectionreferencedisplayname>
+      <connectorid>/providers/Microsoft.PowerApps/apis/shared_powerappsforappmakers</connectorid>
+      <iscustomizable>1</iscustomizable>
+      <statecode>0</statecode>
+      <statuscode>1</statuscode>
+    </connectionreference>
+  </connectionreferences>
+  <Languages>
+    <Language>1033</Language>
+    <Language>1035</Language>
+  </Languages>
+</ImportExportXml>
