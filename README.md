@@ -1,6 +1,6 @@
 # Migrate Canvas Apps
 
-## NOTE!!! JUST REALIZED A BUG REGARDING APP FLOW CONNECTIONS WHICH ARE NOT WORKING. THIS MEANT THAT YOU WOULD NEED TO ADD ALL FLOWS AFTER THE MIGRATION AGAIN TO THE APP
+## NOTE!!! THERE SEEMS TO A BUG OR PRODUCT BEHAVIOUR CHANGE REGARDING APP FLOWS. AFTER IMPORT THE FLOW(S) NEED TO BE RE-ADDED TO THE APP
 
 
 Solution for migrating Canvas Apps and their related resources like Flows between environments. It includes simple Canvas App with supporting Cloud Flows and Custom Connector to do the migration by automating Power Platform legacy export/import functionality
