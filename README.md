@@ -188,11 +188,17 @@ This Power Platform solution installs Custom Connector
 
 3. Verify that all the connection are created. If not then click three dots next to connector to create new connection
 
-   <img width="350" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/22e6a34c-250e-457f-9ef3-db615b534fa4">
+   <img width="350" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/b3bfd212-e967-420f-97d3-d727398176d0">
 
 <br>
 
-4. Solution import takes couple minutes
+4. With **Target Environment Types** environment variable we can control which type of environments are allowed as target environment for the migration
+
+   <img width="600" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/b2ef3c48-c725-46bf-aaeb-7d7007011560">
+
+<br>
+
+4. Click **Import**
 
 <br>
 <br>
