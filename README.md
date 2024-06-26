@@ -207,7 +207,8 @@ This Power Platform solution installs Custom Connector
 
 - App migration status is saved to **Migration Job** Dataverse table and users need to have read-write permissions to this table. Solution contains own security role **Canvas Apps Migration Users** which grant Create, Read and Write permissions to the table as well as Read permissions to Process (workflows) system table, so add this security role to app app users
   
-   ![](Images/securityrole.png)
+   <img width="500" alt="image" src="Images/securityrole.png" />
+   
 <br>
 <br>
 
@@ -223,7 +224,13 @@ This Power Platform solution installs Custom Connector
 
  <br>
  
-3. Select source environment
+3. Tool support canvas apps migration and app permission migration between apps. Select **Migrate Canvas App**
+   
+   <img width="500" alt="image" src="Images/home.png" />
+  
+   <br>
+
+4. Select source environment
 
    <img width="150" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/c4633e20-37d5-44ad-884d-0a896e2d04ac">
 
@@ -233,7 +240,13 @@ This Power Platform solution installs Custom Connector
 
    <img width="300" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/c7e897f2-1fa5-44e2-9e39-72d5ace4a897">
 
- <br>
+   <br>
+
+   **NOTE!** If app is using cloud flows then tool will notify that user has to reconnect (remove/add) all the flows to the app after the migration
+
+   <img width="400" alt="image" src="Images/app-has-flows-warning.png">
+
+   <br>
  
 5. Select target environment
 
@@ -243,11 +256,15 @@ This Power Platform solution installs Custom Connector
 
 6. If there are flows included in the app having any connections, then you need to create all the connections before migration.
 
-   You can create new connection(s) or select existing connection(s). Connection creation opens to new browser tab for target environment. If you want to create all connections click **Create All** which opens own browser tab for each connection.
+   You can select existing connection or create new connection by clicking the "**+**" icon. This will open connection creation to new browser tab for target environment. Remember to click **Refresh** to see the new connection(s) you created
 
-   <img width="550" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/a43dc14a-fbc8-484e-bdf5-4b30e7ad86d8">
+   <img width="550" alt="image" src="Images/flow-conns.png">
    
-   <img width="650" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/3189f324-1f57-48a5-a9fc-d3d138330003">
+   <br>
+
+   <img width="450" alt="image" src="Images/sp-conn-example.png">
+
+   <br>
 
    **NOTE!** Browser pop-up blocker might block opening new browser tab. If that is the case then one option is to open target environment in  make.powerapps.com and manually create connections
 
@@ -261,49 +278,35 @@ This Power Platform solution installs Custom Connector
 
 9. Click **Migrate** to start the app migration. It takes few minutes depending how many related resources there are in the app
 
-    <img width="450" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/54410a0b-fbe1-4569-91a1-4ada70ed4757">
+
+    <img width="450" alt="image" src="Images/app-migrating.png">
 
 <br>
 
-11. If migration was succefull then click **Next Step** to move to the next step of the process
+10. If migration was succefull then click **Next Step** to move to the next step of the process
 
-    <img width="550" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/f00dc403-2013-4003-87dd-fa2098a66dcd">
-
-<br>
-
-11. Select the migrated app from the list. If the app is not listed then click refresh icon to fetch your apps from target environment.
-
-    **NOTE!** sometimes it can take little while for the migrated app to be visible here
-
-    <img width="550" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/30d97d02-555f-42a6-b25b-7a603c34eb14">
-   
-<br>
-
-12. Now you should see all the permissions (if any) of the app in source environment. You can remove permissions if needed or do not share the app in target environment at all. Make the necessary changes and click **Share App** or click **Next Step** if you do not want to share the app for now
-
-    <img width="600" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/551ae3d5-154c-42eb-a1dc-2490bcf249ab">
-
-    If you shared the app then when sharing is completed you should see the green success icon for each permission like below
-
-    <img width="550" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/7eec74d7-8926-4e48-a437-8c0b565f4c66">
+    <img width="650" alt="image" src="Images/app-migrated-successfully.png">
 
 <br>
 
-13. In this step you have following options
+11. In this step you can see all the permissions (if any) of the app in source environment and if you want you can share the migrated app in target environment with same users and groups. There is an option for you to select should the users be notified after app is shared with them. So, either click **Share App** with desired sharing notification setting or just click **Next Step** if you do not want to share the app for now
+
+      <img width="600" alt="image" src="Images/share-app.png">
+
+      <br>
+
+      If you shared the app then when sharing is completed you should see the green success icon for each permission like below
+
+      <img width="600" alt="image" src="Images/app-shared.png">
+
+<br>
+
+13. In the last step you have following options
     
-      - Rename app in source environment by appending "(MIGRATED)" to the end of the app display name
-      - Remove all the other permissions except your own
-      - Remove the old version from source environment
+      - Rename app in source environment by appending " - MIGRATED" to the end of the app display name
+      - Remove all the other permissions except your own (if app is shared)
+      - Send email notification to users and groups of the app about the change (if app is shared). You can change the recipients, subject and the email body but <u>tool will add a link to the migrated app in target environment to the end of the email</u>
 
          <br>
-         <img width="400" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/b2666095-776a-4951-b1da-81255b26f749">
+         <img width="600" alt="image" src="Images/last-step.png">
 
-<br>
-
-14. In last step you can send an email notification to all the users and groups about the migration (group members are not extracted, so email is send to group address). Email contains app link to the new app in target environment
-
-    <img width="600" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/e6e61071-7dbc-4ade-8a7e-e683845cf73e">
-
-
-
-  
