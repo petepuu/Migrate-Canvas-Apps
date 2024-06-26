@@ -205,19 +205,9 @@ This Power Platform solution installs Custom Connector
 
 # How to use the tool
 
-- App migration status is saved to **Migration Job** Dataverse table and users need to have read-write permissions to this table. Solution contains own security role **Canvas Apps Migration Users** which grant Create, Read and Write permissions to the table, so add this security role to app app users
+- App migration status is saved to **Migration Job** Dataverse table and users need to have read-write permissions to this table. Solution contains own security role **Canvas Apps Migration Users** which grant Create, Read and Write permissions to the table as well as Read permissions to Process (workflows) system table, so add this security role to app app users
   
-- You might need to share also grant run-only user permissions to **all** solution flows.
-
-  Select user(s) or group(s) and define **Provided by run-only user** for all the connections of the flow
-
-   <img width="400" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/9f7fd9a6-266f-4d8a-b6b5-1b35db73370c">
-
-   <br>
-
-   <img width="400" alt="image" src="https://github.com/petepuu/Migrate-Canvas-Apps/assets/8307644/61e3ba2c-3c4e-425a-afe7-42c24064be8c">
-
-
+   ![](Images/securityrole.png)
 <br>
 <br>
 
