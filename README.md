@@ -4,6 +4,9 @@ Solution for migrating Canvas Apps and their related resources like Flows betwee
 
 As this solution uses **Custom Connector**, all the users need to have standalone Power Apps license Power Apps Premium or Power Apps per App
 
+## Known issues
+- Source and target environments are listed using PowerAppsForMakers.GetEnvironments() which returns might return environment where user of the tool does not have any permissions. Migration fails if user does not have Environment Maker permissions if the target environment
+
 ## Installation and configuration
 
 ### Create Entra ID application registration
