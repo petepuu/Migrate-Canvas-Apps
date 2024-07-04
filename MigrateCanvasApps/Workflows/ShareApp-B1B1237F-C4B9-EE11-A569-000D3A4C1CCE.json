@@ -69,6 +69,13 @@
                   "x-ms-dynamically-added": true,
                   "description": "Please enter your input",
                   "x-ms-content-hint": "TEXT"
+                },
+                "text_5": {
+                  "title": "NotifyUsers",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "Please enter your input",
+                  "x-ms-content-hint": "TEXT"
                 }
               },
               "required": [
@@ -76,7 +83,8 @@
                 "text_1",
                 "text_2",
                 "text_3",
-                "text_4"
+                "text_4",
+                "text_5"
               ]
             }
           }
@@ -98,28 +106,9 @@
             ]
           }
         },
-        "Email": {
-          "runAfter": {
-            "Status": [
-              "Succeeded"
-            ]
-          },
-          "metadata": {
-            "operationMetadataId": "c77b3ddb-50e4-4384-a57c-3ca7678703ee"
-          },
-          "type": "InitializeVariable",
-          "inputs": {
-            "variables": [
-              {
-                "name": "Email",
-                "type": "string"
-              }
-            ]
-          }
-        },
         "Edit_App_Role_Assignment": {
           "runAfter": {
-            "Email": [
+            "Status": [
               "Succeeded"
             ]
           },
@@ -142,7 +131,7 @@
                 {
                   "properties/principal/id": "@triggerBody()['text_2']",
                   "properties/principal/type": "@triggerBody()['text_4']",
-                  "properties/NotifyShareTargetOption": "false",
+                  "properties/NotifyShareTargetOption": "@{triggerBody()['text_5']}",
                   "properties/roleName": "@triggerBody()['text_3']"
                 }
               ]

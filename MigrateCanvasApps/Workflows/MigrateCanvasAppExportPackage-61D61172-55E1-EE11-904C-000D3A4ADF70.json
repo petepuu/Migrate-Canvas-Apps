@@ -21,6 +21,9 @@
         }
       },
       "shared_commondataserviceforapps_1": {
+        "impersonation": {
+          "source": "invoker"
+        },
         "runtimeSource": "embedded",
         "connection": {
           "connectionReferenceLogicalName": "powciti_sharedcommondataserviceforapps_4cf94"
@@ -138,12 +141,15 @@
           "type": "OpenApiConnection",
           "inputs": {
             "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_office365users",
               "connectionName": "shared_office365users_1",
-              "operationId": "MyProfile_V2",
-              "apiId": "/providers/Microsoft.PowerApps/apis/shared_office365users"
+              "operationId": "MyProfile_V2"
             },
             "parameters": {},
-            "authentication": "@parameters('$authentication')"
+            "authentication": {
+              "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']",
+              "type": "Raw"
+            }
           }
         },
         "ResourceTemp": {
@@ -338,16 +344,19 @@
               "type": "OpenApiConnection",
               "inputs": {
                 "host": {
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_migrate-20canvas-20apps-5fb1c7f5321b570664-5f5aadce8b365dea81",
                   "connectionName": "shared_migrate-20canvas-20apps-5fb1c7f5321b570664-5f5aadce8b365dea81_1",
-                  "operationId": "ListPackageResources",
-                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_migrate-20canvas-20apps-5fb1c7f5321b570664-5f5aadce8b365dea81"
+                  "operationId": "ListPackageResources"
                 },
                 "parameters": {
                   "EnvironmentID": "@triggerBody()['text']",
                   "api-version": "2016-11-01",
                   "body": "{\n    \"baseResourceIds\": [\n        \"/providers/Microsoft.PowerApps/apps/@{triggerBody()['text_2']}\"\n    ]\n}"
                 },
-                "authentication": "@parameters('$authentication')"
+                "authentication": {
+                  "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']",
+                  "type": "Raw"
+                }
               }
             },
             "XML": {
@@ -615,16 +624,19 @@
               "type": "OpenApiConnection",
               "inputs": {
                 "host": {
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_migrate-20canvas-20apps-5fb1c7f5321b570664-5f5aadce8b365dea81",
                   "connectionName": "shared_migrate-20canvas-20apps-5fb1c7f5321b570664-5f5aadce8b365dea81_1",
-                  "operationId": "ExportPackage",
-                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_migrate-20canvas-20apps-5fb1c7f5321b570664-5f5aadce8b365dea81"
+                  "operationId": "ExportPackage"
                 },
                 "parameters": {
                   "EnvironmentID": "@triggerBody()['text']",
                   "api-version": "2016-11-01",
                   "body": "@json(concat(substring(outputs('Set-ResourceIds'), 0, sub(length(outputs('Set-ResourceIds')), 1)), '}}'))"
                 },
-                "authentication": "@parameters('$authentication')"
+                "authentication": {
+                  "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']",
+                  "type": "Raw"
+                }
               },
               "operationOptions": "DisableAsyncPattern"
             },
@@ -958,9 +970,9 @@
               "type": "OpenApiConnection",
               "inputs": {
                 "host": {
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
                   "connectionName": "shared_commondataserviceforapps_1",
-                  "operationId": "CreateRecord",
-                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                  "operationId": "CreateRecord"
                 },
                 "parameters": {
                   "entityName": "powciti_migrationjobs",
@@ -991,7 +1003,7 @@
         }
       }
     },
-    "templateName": ""
+    "templateName": null
   },
   "schemaVersion": "1.0.0.0"
 }

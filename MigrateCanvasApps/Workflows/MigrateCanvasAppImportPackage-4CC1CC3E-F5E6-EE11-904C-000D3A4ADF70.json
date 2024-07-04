@@ -2,6 +2,9 @@
   "properties": {
     "connectionReferences": {
       "shared_commondataserviceforapps_1": {
+        "impersonation": {
+          "source": "invoker"
+        },
         "runtimeSource": "embedded",
         "connection": {
           "connectionReferenceLogicalName": "powciti_sharedcommondataserviceforapps_4cf94"
@@ -61,46 +64,6 @@
         }
       },
       "actions": {
-        "Respond_to_a_PowerApp_or_flow": {
-          "runAfter": {
-            "Update-MigrationJob": [
-              "Succeeded"
-            ]
-          },
-          "metadata": {
-            "operationMetadataId": "06ef095d-8382-4f47-9344-05284df14e5d"
-          },
-          "type": "Response",
-          "kind": "PowerApp",
-          "inputs": {
-            "statusCode": 200,
-            "body": {
-              "status": "@variables('MigrationStatus')",
-              "message": "@variables('MigrationMessage')",
-              "completed": "@{variables('MigrationCompleted')}"
-            },
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "title": "Status",
-                  "x-ms-dynamically-added": true,
-                  "type": "string"
-                },
-                "message": {
-                  "title": "Message",
-                  "x-ms-dynamically-added": true,
-                  "type": "string"
-                },
-                "completed": {
-                  "title": "Completed",
-                  "x-ms-dynamically-added": true,
-                  "type": "string"
-                }
-              }
-            }
-          }
-        },
         "MigrationStatus": {
           "runAfter": {
             "Get-MigrationJob": [
@@ -179,7 +142,7 @@
         },
         "ImportPackage": {
           "runAfter": {
-            "MigrationCompleted": [
+            "TargetAppID": [
               "Succeeded"
             ]
           },
@@ -242,6 +205,78 @@
               "inputs": {
                 "name": "MigrationCompleted",
                 "value": "@false"
+              }
+            },
+            "Update-MigrationJob-Failed": {
+              "runAfter": {
+                "Set-MigrationCompleted-Import": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "b662b114-6a79-4b24-8365-d9910b4eba4d"
+              },
+              "type": "OpenApiConnection",
+              "inputs": {
+                "host": {
+                  "connectionName": "shared_commondataserviceforapps_1",
+                  "operationId": "UpdateRecord",
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                },
+                "parameters": {
+                  "entityName": "powciti_migrationjobs",
+                  "recordId": "@triggerBody()['text_7']",
+                  "item/powciti_completed": "@variables('MigrationCompleted')",
+                  "item/powciti_migrationmessage": "@variables('MigrationMessage')",
+                  "item/powciti_migrationstatus": "@variables('MigrationStatus')"
+                },
+                "authentication": "@parameters('$authentication')"
+              }
+            },
+            "Respond_to_a_PowerApp_or_flow_2": {
+              "runAfter": {
+                "Update-MigrationJob-Failed": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "06ef095d-8382-4f47-9344-05284df14e5d"
+              },
+              "type": "Response",
+              "kind": "PowerApp",
+              "inputs": {
+                "statusCode": 200,
+                "body": {
+                  "status": "@variables('MigrationStatus')",
+                  "message": "@variables('MigrationMessage')",
+                  "completed": "@{variables('MigrationCompleted')}",
+                  "targetappid": "@variables('TargetAppID')"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "title": "Status",
+                      "x-ms-dynamically-added": true,
+                      "type": "string"
+                    },
+                    "message": {
+                      "title": "Message",
+                      "x-ms-dynamically-added": true,
+                      "type": "string"
+                    },
+                    "completed": {
+                      "title": "Completed",
+                      "x-ms-dynamically-added": true,
+                      "type": "string"
+                    },
+                    "targetappid": {
+                      "title": "TargetAppID",
+                      "x-ms-dynamically-added": true,
+                      "type": "string"
+                    }
+                  }
+                }
               }
             }
           },
@@ -354,6 +389,87 @@
                       "name": "MigrationCompleted",
                       "value": "@true"
                     }
+                  },
+                  "ImportPackageResponseXML": {
+                    "runAfter": {
+                      "Set-MigrationCompleted-Success": [
+                        "Succeeded"
+                      ]
+                    },
+                    "metadata": {
+                      "operationMetadataId": "c011c1cc-5235-4f7d-8854-27accaa3401b"
+                    },
+                    "type": "Compose",
+                    "inputs": "@xml(json(concat('{\"root\": { resources:', body('ImportPackage')['properties/resources'], '}}')))"
+                  },
+                  "GetTargetAppID": {
+                    "runAfter": {
+                      "ImportPackageResponseXML": [
+                        "Succeeded"
+                      ]
+                    },
+                    "metadata": {
+                      "operationMetadataId": "4e449af4-1cee-4dfc-b24b-675537a83662"
+                    },
+                    "type": "Compose",
+                    "inputs": "@xpath(outputs('ImportPackageResponseXML'), '//hierarchy[contains(text(), \"Root\")]/../id/text()')"
+                  },
+                  "Condition": {
+                    "actions": {
+                      "AppID": {
+                        "runAfter": {},
+                        "metadata": {
+                          "operationMetadataId": "5b89b5ea-7f75-463b-9b8f-5e488cd5a829"
+                        },
+                        "type": "Compose",
+                        "inputs": "@first(outputs('GetTargetAppID'))"
+                      },
+                      "Set_variable": {
+                        "runAfter": {
+                          "AppID": [
+                            "Succeeded"
+                          ]
+                        },
+                        "metadata": {
+                          "operationMetadataId": "2e29fd47-94d9-4a11-9ab0-abf536812e1a"
+                        },
+                        "type": "SetVariable",
+                        "inputs": {
+                          "name": "TargetAppID",
+                          "value": "@{substring(outputs('AppID'), add(lastIndexOf(outputs('AppID'), '/'), 1))}"
+                        }
+                      }
+                    },
+                    "runAfter": {
+                      "GetTargetAppID": [
+                        "Succeeded"
+                      ]
+                    },
+                    "else": {
+                      "actions": {
+                        "Set_variable_2": {
+                          "runAfter": {},
+                          "metadata": {
+                            "operationMetadataId": "6ed26536-ec9f-433e-9f8a-c5f77bc32929"
+                          },
+                          "type": "SetVariable",
+                          "inputs": {
+                            "name": "TargetAppID",
+                            "value": "@{null}"
+                          }
+                        }
+                      }
+                    },
+                    "expression": {
+                      "equals": [
+                        "@length(outputs('GetTargetAppID'))",
+                        1
+                      ]
+                    },
+                    "metadata": {
+                      "operationMetadataId": "296333f1-988d-46c3-8efe-cc88ecb67e8e"
+                    },
+                    "type": "If"
                   }
                 }
               },
@@ -367,6 +483,78 @@
                 "operationMetadataId": "64c8eefc-eb10-4505-aa13-f3f36d1e5e66"
               },
               "type": "If"
+            },
+            "Update-MigrationJob": {
+              "runAfter": {
+                "ImportFailed": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "b662b114-6a79-4b24-8365-d9910b4eba4d"
+              },
+              "type": "OpenApiConnection",
+              "inputs": {
+                "host": {
+                  "connectionName": "shared_commondataserviceforapps_1",
+                  "operationId": "UpdateRecord",
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                },
+                "parameters": {
+                  "entityName": "powciti_migrationjobs",
+                  "recordId": "@triggerBody()['text_7']",
+                  "item/powciti_completed": "@variables('MigrationCompleted')",
+                  "item/powciti_migrationmessage": "@variables('MigrationMessage')",
+                  "item/powciti_migrationstatus": "@variables('MigrationStatus')"
+                },
+                "authentication": "@parameters('$authentication')"
+              }
+            },
+            "Respond_to_a_PowerApp_or_flow": {
+              "runAfter": {
+                "Update-MigrationJob": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "06ef095d-8382-4f47-9344-05284df14e5d"
+              },
+              "type": "Response",
+              "kind": "PowerApp",
+              "inputs": {
+                "statusCode": 200,
+                "body": {
+                  "status": "@variables('MigrationStatus')",
+                  "message": "@variables('MigrationMessage')",
+                  "completed": "@{variables('MigrationCompleted')}",
+                  "targetappid": "@variables('TargetAppID')"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "title": "Status",
+                      "x-ms-dynamically-added": true,
+                      "type": "string"
+                    },
+                    "message": {
+                      "title": "Message",
+                      "x-ms-dynamically-added": true,
+                      "type": "string"
+                    },
+                    "completed": {
+                      "title": "Completed",
+                      "x-ms-dynamically-added": true,
+                      "type": "string"
+                    },
+                    "targetappid": {
+                      "title": "TargetAppID",
+                      "x-ms-dynamically-added": true,
+                      "type": "string"
+                    }
+                  }
+                }
+              }
             }
           },
           "runAfter": {
@@ -379,30 +567,23 @@
           },
           "type": "Scope"
         },
-        "Update-MigrationJob": {
+        "TargetAppID": {
           "runAfter": {
-            "ImportPackageAction-SUCCESS": [
+            "MigrationCompleted": [
               "Succeeded"
             ]
           },
           "metadata": {
-            "operationMetadataId": "b662b114-6a79-4b24-8365-d9910b4eba4d"
+            "operationMetadataId": "ba07194e-dbd9-462b-a992-b3799b0a1d3f"
           },
-          "type": "OpenApiConnection",
+          "type": "InitializeVariable",
           "inputs": {
-            "host": {
-              "connectionName": "shared_commondataserviceforapps_1",
-              "operationId": "UpdateRecord",
-              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
-            },
-            "parameters": {
-              "entityName": "powciti_migrationjobs",
-              "recordId": "@triggerBody()['text_7']",
-              "item/powciti_completed": "@variables('MigrationCompleted')",
-              "item/powciti_migrationmessage": "@variables('MigrationMessage')",
-              "item/powciti_migrationstatus": "@variables('MigrationStatus')"
-            },
-            "authentication": "@parameters('$authentication')"
+            "variables": [
+              {
+                "name": "TargetAppID",
+                "type": "string"
+              }
+            ]
           }
         }
       }

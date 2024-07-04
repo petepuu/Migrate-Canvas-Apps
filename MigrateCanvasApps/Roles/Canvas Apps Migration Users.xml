@@ -12,6 +12,7 @@
     <RolePrivilege name="prvReadSdkMessageProcessingStepImage" level="Global" />
     <RolePrivilege name="prvReadSharePointData" level="Global" />
     <RolePrivilege name="prvReadSharePointDocument" level="Global" />
+    <RolePrivilege name="prvReadWorkflow" level="Global" />
     <RolePrivilege name="prvWritepowciti_MigrationJob" level="Basic" />
     <RolePrivilege name="prvWriteSharePointData" level="Global" />
   </RolePrivileges>

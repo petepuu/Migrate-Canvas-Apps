@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ImportExportXml version="9.2.24043.228" SolutionPackageVersion="9.2" languagecode="1033" generatedBy="CrmLive" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<ImportExportXml version="9.2.24061.198" SolutionPackageVersion="9.2" languagecode="1033" generatedBy="CrmLive" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <SolutionManifest>
     <UniqueName>MigrateCanvasApps</UniqueName>
     <LocalizedNames>
       <LocalizedName description="Migrate Canvas Apps" languagecode="1033" />
     </LocalizedNames>
     <Descriptions />
-    <Version>1.0.0.0</Version>
+    <Version>1.1.0.1</Version>
     <Managed>0</Managed>
     <Publisher>
       <UniqueName>PowerCitizens</UniqueName>
@@ -86,13 +86,23 @@
       <RootComponent type="29" id="{4cc1cc3e-f5e6-ee11-904c-000d3a4adf70}" behavior="0" />
       <RootComponent type="29" id="{61d61172-55e1-ee11-904c-000d3a4adf70}" behavior="0" />
       <RootComponent type="29" id="{87d577a2-dee6-ee11-904c-000d3a4adf70}" behavior="0" />
+      <RootComponent type="29" id="{8b5ba6cf-ef32-ef11-8409-000d3abea4c6}" behavior="0" />
       <RootComponent type="29" id="{b1b1237f-c4b9-ee11-a569-000d3a4c1cce}" behavior="0" />
       <RootComponent type="29" id="{b6224efc-6cd1-ee11-9079-000d3a4c1cce}" behavior="0" />
       <RootComponent type="29" id="{d5bd811f-7be7-ee11-904c-000d3a4adf70}" behavior="0" />
       <RootComponent type="29" id="{f1fa3b0b-1cb9-ee11-a569-000d3a4c1cce}" behavior="0" />
+      <RootComponent type="29" id="{f8bbb170-f832-ef11-8409-000d3abea4c6}" behavior="0" />
       <RootComponent type="300" schemaName="powciti_migratecanvasapps_9e789" behavior="0" />
     </RootComponents>
     <MissingDependencies>
+      <MissingDependency>
+        <Required type="1" schemaName="environmentvariabledefinition" displayName="Environment Variable Definition" solution="EnvironmentVariables (1.0.2406.4)" />
+        <Dependent type="300" schemaName="powciti_migratecanvasapps_9e789" displayName="Migrate Canvas Apps" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="environmentvariablevalue" displayName="Environment Variable Value" solution="EnvironmentVariables (1.0.2406.4)" />
+        <Dependent type="300" schemaName="powciti_migratecanvasapps_9e789" displayName="Migrate Canvas Apps" />
+      </MissingDependency>
       <MissingDependency>
         <Required type="372" schemaName="powciti_migrate-20canvas-20apps" displayName="Migrate Canvas Apps" solution="Active" id="{0ddf224c-ca32-4d8a-8fb9-048a37bc3407}" />
         <Dependent type="29" displayName="GetPackageResources" id="{26762c41-cfe1-ee11-904c-000d3a4adf70}" />

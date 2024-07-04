@@ -12,6 +12,9 @@
         }
       },
       "shared_commondataserviceforapps_1": {
+        "impersonation": {
+          "source": "invoker"
+        },
         "runtimeSource": "embedded",
         "connection": {
           "connectionReferenceLogicalName": "powciti_sharedcommondataserviceforapps_4cf94"
@@ -93,52 +96,6 @@
                 "type": "string"
               }
             ]
-          }
-        },
-        "Respond_to_a_PowerApp_or_flow": {
-          "runAfter": {
-            "UploadSuccess": [
-              "Succeeded"
-            ]
-          },
-          "metadata": {
-            "operationMetadataId": "06ef095d-8382-4f47-9344-05284df14e5d"
-          },
-          "type": "Response",
-          "kind": "PowerApp",
-          "inputs": {
-            "statusCode": 200,
-            "body": {
-              "status": "@variables('MigrationStatus')",
-              "message": "@variables('MigrationMessage')",
-              "migrationjobid": "@triggerBody()['text_7']",
-              "completed": "@{false}"
-            },
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "title": "Status",
-                  "x-ms-dynamically-added": true,
-                  "type": "string"
-                },
-                "message": {
-                  "title": "Message",
-                  "x-ms-dynamically-added": true,
-                  "type": "string"
-                },
-                "migrationjobid": {
-                  "title": "MigrationJobID",
-                  "x-ms-dynamically-added": true,
-                  "type": "string"
-                },
-                "completed": {
-                  "title": "Completed",
-                  "x-ms-dynamically-added": true,
-                  "type": "string"
-                }
-              }
-            }
           }
         },
         "Upload": {
@@ -539,21 +496,6 @@
                 "value": "Failed"
               }
             },
-            "Set-MigrationMessage-Failed": {
-              "runAfter": {
-                "Set-MigrationStatus-Failed": [
-                  "Succeeded"
-                ]
-              },
-              "metadata": {
-                "operationMetadataId": "8989ac4f-0548-4034-bf45-d6be8b7309ad"
-              },
-              "type": "SetVariable",
-              "inputs": {
-                "name": "MigrationMessage",
-                "value": "App uploaded failed"
-              }
-            },
             "Update-MigrationJob-Failed": {
               "runAfter": {
                 "Set-MigrationMessage-Failed": [
@@ -577,6 +519,100 @@
                   "item/powciti_migrationstatus": "@variables('MigrationStatus')"
                 },
                 "authentication": "@parameters('$authentication')"
+              }
+            },
+            "Respond_to_a_PowerApp_or_flow_2": {
+              "runAfter": {
+                "Update-MigrationJob-Failed": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "06ef095d-8382-4f47-9344-05284df14e5d"
+              },
+              "type": "Response",
+              "kind": "PowerApp",
+              "inputs": {
+                "statusCode": 200,
+                "body": {
+                  "status": "@variables('MigrationStatus')",
+                  "message": "@variables('MigrationMessage')",
+                  "migrationjobid": "@triggerBody()['text_7']",
+                  "completed": "@{false}"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "title": "Status",
+                      "x-ms-dynamically-added": true,
+                      "type": "string"
+                    },
+                    "message": {
+                      "title": "Message",
+                      "x-ms-dynamically-added": true,
+                      "type": "string"
+                    },
+                    "migrationjobid": {
+                      "title": "MigrationJobID",
+                      "x-ms-dynamically-added": true,
+                      "type": "string"
+                    },
+                    "completed": {
+                      "title": "Completed",
+                      "x-ms-dynamically-added": true,
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "FilterErrors": {
+              "runAfter": {
+                "Set-MigrationStatus-Failed": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "6b1fd5dc-228f-4cf3-b3e3-e40d0d1597d7"
+              },
+              "type": "Query",
+              "inputs": {
+                "from": "@result('Upload')",
+                "where": "@equals(item()['Status'], 'Failed')"
+              }
+            },
+            "Select": {
+              "runAfter": {
+                "FilterErrors": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "9963e7e5-51f6-4688-bb50-631d30726a61"
+              },
+              "type": "Select",
+              "inputs": {
+                "from": "@body('FilterErrors')",
+                "select": {
+                  "Action": "@item()['name']",
+                  "Message": "@if(contains(item(), 'error'),  item()['error/message'], if(contains(item(), 'outputs'), item()['outputs/body/error/message'], ''))"
+                }
+              }
+            },
+            "Set-MigrationMessage-Failed": {
+              "runAfter": {
+                "Select": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "8989ac4f-0548-4034-bf45-d6be8b7309ad"
+              },
+              "type": "SetVariable",
+              "inputs": {
+                "name": "MigrationMessage",
+                "value": "@{concat('App upload failed: ', first(body('Select'))['Message'] )}"
               }
             }
           },
@@ -642,6 +678,52 @@
                   "item/powciti_migrationstatus": "@variables('MigrationStatus')"
                 },
                 "authentication": "@parameters('$authentication')"
+              }
+            },
+            "Respond_to_a_PowerApp_or_flow": {
+              "runAfter": {
+                "Update-MigrationJob-Success": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "06ef095d-8382-4f47-9344-05284df14e5d"
+              },
+              "type": "Response",
+              "kind": "PowerApp",
+              "inputs": {
+                "statusCode": 200,
+                "body": {
+                  "status": "@variables('MigrationStatus')",
+                  "message": "@variables('MigrationMessage')",
+                  "migrationjobid": "@triggerBody()['text_7']",
+                  "completed": "@{false}"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "title": "Status",
+                      "x-ms-dynamically-added": true,
+                      "type": "string"
+                    },
+                    "message": {
+                      "title": "Message",
+                      "x-ms-dynamically-added": true,
+                      "type": "string"
+                    },
+                    "migrationjobid": {
+                      "title": "MigrationJobID",
+                      "x-ms-dynamically-added": true,
+                      "type": "string"
+                    },
+                    "completed": {
+                      "title": "Completed",
+                      "x-ms-dynamically-added": true,
+                      "type": "string"
+                    }
+                  }
+                }
               }
             }
           },

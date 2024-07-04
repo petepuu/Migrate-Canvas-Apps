@@ -119,7 +119,7 @@
           "type": "Query",
           "inputs": {
             "from": "@outputs('Get_Apps')?['body/value']",
-            "where": "@equals(item()?['properties/owner/id'], triggerBody()['text_1'])"
+            "where": "@and(equals(item()?['properties/almMode'], 'Environment'), equals(item()?['properties/owner/id'], triggerBody()['text_1']))"
           }
         },
         "SelectNeededProperties": {
@@ -139,7 +139,9 @@
               "ID": "@item()?['name']",
               "Environment": "@item()?['properties/environment/name']",
               "Created": "@item()?['properties/createdTime']",
-              "PlayURI": "@item()?['properties/appPlayUri']"
+              "PlayURI": "@item()?['properties/appPlayUri']",
+              "LicenseDesignation": "@item()?['properties/appPlanClassification']",
+              "HasDataverse": "@not(empty(item()?['properties/databaseReferences']))"
             }
           }
         }

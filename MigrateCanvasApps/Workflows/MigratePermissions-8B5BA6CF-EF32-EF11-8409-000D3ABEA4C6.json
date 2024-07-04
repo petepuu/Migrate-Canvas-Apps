@@ -1,0 +1,512 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_powerappsforappmakers_1": {
+        "runtimeSource": "invoker",
+        "connection": {
+          "connectionReferenceLogicalName": "powciti_sharedpowerappsforappmakers_8fba6"
+        },
+        "api": {
+          "name": "shared_powerappsforappmakers"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        },
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        }
+      },
+      "triggers": {
+        "manual": {
+          "metadata": {
+            "operationMetadataId": "47499628-2e51-49a2-b94b-207a9a050b08"
+          },
+          "type": "Request",
+          "kind": "PowerAppV2",
+          "inputs": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "title": "EnvironmentID",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "Please enter your input",
+                  "x-ms-content-hint": "TEXT"
+                },
+                "text_1": {
+                  "title": "AppID",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "Please enter your input",
+                  "x-ms-content-hint": "TEXT"
+                },
+                "text_2": {
+                  "title": "Members",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "Please enter your input",
+                  "x-ms-content-hint": "TEXT"
+                },
+                "text_3": {
+                  "title": "NotifyUsers",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "Please enter your input",
+                  "x-ms-content-hint": "TEXT"
+                }
+              },
+              "required": [
+                "text",
+                "text_1",
+                "text_2",
+                "text_3"
+              ]
+            }
+          }
+        }
+      },
+      "actions": {
+        "Status": {
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "8358d676-c5b9-45fe-879f-a1416818e8ff"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "Status",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "Message": {
+          "runAfter": {
+            "Status": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "c77b3ddb-50e4-4384-a57c-3ca7678703ee"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "Message",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "NewPermissionsFromApp": {
+          "runAfter": {
+            "Message": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "bf924733-737d-403a-900d-a10cd5d83e32"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "NewPermissionsFromApp",
+                "type": "array",
+                "value": "@json(triggerBody()['text_2'])"
+              }
+            ]
+          }
+        },
+        "NewMembersArray": {
+          "runAfter": {
+            "NewPermissionsFromApp": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "ac7797be-a697-4ce2-b914-3eff64ac22d6"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "NewMembersArray",
+                "type": "array",
+                "value": []
+              }
+            ]
+          }
+        },
+        "OldMembersArray": {
+          "runAfter": {
+            "NewMembersArray": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "700aaad7-7b62-4151-9069-eb84f98a8676"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "OldMembersArray",
+                "type": "array",
+                "value": []
+              }
+            ]
+          }
+        },
+        "BuildNewMembersArray": {
+          "foreach": "@variables('NewPermissionsFromApp')",
+          "actions": {
+            "Append_to_array_variable": {
+              "runAfter": {},
+              "metadata": {
+                "operationMetadataId": "a765fd8f-f245-413d-bbdc-822d8d3c8858"
+              },
+              "type": "AppendToArrayVariable",
+              "inputs": {
+                "name": "NewMembersArray",
+                "value": {
+                  "properties/principal/id": "@{items('BuildNewMembersArray')['ObjectID']}",
+                  "properties/principal/type": "@{items('BuildNewMembersArray')['Type']}",
+                  "properties/NotifyShareTargetOption": "@{triggerBody()['text_3']}",
+                  "properties/roleName": "@{items('BuildNewMembersArray')['Role']}"
+                }
+              }
+            }
+          },
+          "runAfter": {
+            "OldMembersArray": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "36987827-8243-4c1d-9f3d-3d19ca4bb118"
+          },
+          "type": "Foreach"
+        },
+        "GetCurrentRoles": {
+          "runAfter": {
+            "BuildNewMembersArray": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "af265865-8656-45d7-ab9b-9846bd6e527e"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_powerappsforappmakers_1",
+              "operationId": "Get-AppRoleAssignment",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_powerappsforappmakers"
+            },
+            "parameters": {
+              "app": "@triggerBody()['text_1']",
+              "api-version": "2017-06-01",
+              "$top": 250
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "FilterPermissionsNoOwner": {
+          "runAfter": {
+            "GetCurrentRoles": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "4f451227-fbbc-413f-9cf7-b97b89338c2c"
+          },
+          "type": "Query",
+          "inputs": {
+            "from": "@outputs('GetCurrentRoles')?['body/value']",
+            "where": "@not(equals(item()?['properties/roleName'], 'Owner'))"
+          }
+        },
+        "BuildOldMembersArray": {
+          "foreach": "@body('FilterPermissionsNoOwner')",
+          "actions": {
+            "IsTenant": {
+              "actions": {
+                "Append_to_array_variable_3": {
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "7355f6af-c82b-4f83-9746-2e3d09035a45"
+                  },
+                  "type": "AppendToArrayVariable",
+                  "inputs": {
+                    "name": "OldMembersArray",
+                    "value": {
+                      "id": "@{concat('tenant-', items('BuildOldMembersArray')?['properties/principal/tenantId'])}"
+                    }
+                  }
+                }
+              },
+              "runAfter": {},
+              "else": {
+                "actions": {
+                  "Append_to_array_variable_2": {
+                    "runAfter": {},
+                    "metadata": {
+                      "operationMetadataId": "7355f6af-c82b-4f83-9746-2e3d09035a45"
+                    },
+                    "type": "AppendToArrayVariable",
+                    "inputs": {
+                      "name": "OldMembersArray",
+                      "value": {
+                        "id": "@{items('BuildOldMembersArray')?['properties']?['principal']?['id']}"
+                      }
+                    }
+                  }
+                }
+              },
+              "expression": {
+                "equals": [
+                  "@items('BuildOldMembersArray')?['properties']?['principal']?['type']",
+                  "Tenant"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "58f2554c-4f2e-413e-ab39-a6e2e063c559"
+              },
+              "type": "If"
+            }
+          },
+          "runAfter": {
+            "FilterPermissionsNoOwner": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "a8493e29-7940-4eb0-928b-d1ec31566faf"
+          },
+          "type": "Foreach"
+        },
+        "ChangePermissions": {
+          "actions": {
+            "RemoveAllPermissionsExceptOwner": {
+              "runAfter": {},
+              "metadata": {
+                "operationMetadataId": "1ff8ce50-10f1-403c-b3fd-0e2536ec7bac"
+              },
+              "type": "OpenApiConnection",
+              "inputs": {
+                "host": {
+                  "connectionName": "shared_powerappsforappmakers_1",
+                  "operationId": "Edit-AppRoleAssignment",
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_powerappsforappmakers"
+                },
+                "parameters": {
+                  "app": "@triggerBody()['text_1']",
+                  "api-version": "2016-11-01",
+                  "$filter": "environment eq '@{triggerBody()['text']}'",
+                  "Content-Type": "application/json",
+                  "body/delete": "@variables('OldMembersArray')"
+                },
+                "authentication": "@parameters('$authentication')"
+              }
+            },
+            "AddNewMembers": {
+              "runAfter": {
+                "RemoveAllPermissionsExceptOwner": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "1ff8ce50-10f1-403c-b3fd-0e2536ec7bac"
+              },
+              "type": "OpenApiConnection",
+              "inputs": {
+                "host": {
+                  "connectionName": "shared_powerappsforappmakers_1",
+                  "operationId": "Edit-AppRoleAssignment",
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_powerappsforappmakers"
+                },
+                "parameters": {
+                  "app": "@triggerBody()['text_1']",
+                  "api-version": "2016-11-01",
+                  "$filter": "environment eq '@{triggerBody()['text']}'",
+                  "Content-Type": "application/json",
+                  "body/put": "@variables('NewMembersArray')"
+                },
+                "authentication": "@parameters('$authentication')"
+              }
+            }
+          },
+          "runAfter": {
+            "BuildOldMembersArray": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "14ffed76-5073-45e7-a6c3-771934099e8b"
+          },
+          "type": "Scope"
+        },
+        "ERROR": {
+          "actions": {
+            "Set-Status": {
+              "runAfter": {},
+              "metadata": {
+                "operationMetadataId": "5375c17d-7409-400d-a452-e2d766f38f9d"
+              },
+              "type": "SetVariable",
+              "inputs": {
+                "name": "Status",
+                "value": "ERROR"
+              }
+            },
+            "Set-Message": {
+              "runAfter": {
+                "Set-Status": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "4c3a9a10-6415-4b81-b0fc-0f7cd2ba62cb"
+              },
+              "type": "SetVariable",
+              "inputs": {
+                "name": "Message",
+                "value": "Error migrating permissions"
+              }
+            },
+            "Respond_to_a_PowerApp_or_flow_2": {
+              "runAfter": {
+                "Set-Message": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "c379f4e6-b8d9-4f24-b54a-70142ee78845"
+              },
+              "type": "Response",
+              "kind": "PowerApp",
+              "inputs": {
+                "statusCode": 200,
+                "body": {
+                  "status": "@variables('Status')",
+                  "message": "@variables('Message')"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "title": "status",
+                      "x-ms-dynamically-added": true,
+                      "type": "string"
+                    },
+                    "message": {
+                      "title": "message",
+                      "x-ms-dynamically-added": true,
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "runAfter": {
+            "ChangePermissions": [
+              "Failed"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "5375c17d-7409-400d-a452-e2d766f38f9d"
+          },
+          "type": "Scope"
+        },
+        "SUCCESS": {
+          "actions": {
+            "Set-Status_2": {
+              "runAfter": {},
+              "metadata": {
+                "operationMetadataId": "5375c17d-7409-400d-a452-e2d766f38f9d"
+              },
+              "type": "SetVariable",
+              "inputs": {
+                "name": "Status",
+                "value": "SUCCESS"
+              }
+            },
+            "Set-Message_2": {
+              "runAfter": {
+                "Set-Status_2": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "8544030b-2bc8-48e9-bb74-905a33b936d6"
+              },
+              "type": "SetVariable",
+              "inputs": {
+                "name": "Message",
+                "value": "Permissions migrated successfully"
+              }
+            },
+            "Respond_to_a_PowerApp_or_flow": {
+              "runAfter": {
+                "Set-Message_2": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "c379f4e6-b8d9-4f24-b54a-70142ee78845"
+              },
+              "type": "Response",
+              "kind": "PowerApp",
+              "inputs": {
+                "statusCode": 200,
+                "body": {
+                  "status": "@variables('Status')",
+                  "message": "@variables('Message')"
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "title": "status",
+                      "x-ms-dynamically-added": true,
+                      "type": "string"
+                    },
+                    "message": {
+                      "title": "message",
+                      "x-ms-dynamically-added": true,
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "runAfter": {
+            "ERROR": [
+              "Skipped"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "22bcb47f-866d-489a-8fbb-3af189010fe0"
+          },
+          "type": "Scope"
+        }
+      }
+    },
+    "templateName": ""
+  },
+  "schemaVersion": "1.0.0.0"
+}

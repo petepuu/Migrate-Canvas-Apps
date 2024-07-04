@@ -55,12 +55,20 @@
                   "x-ms-dynamically-added": true,
                   "description": "Please enter your input",
                   "x-ms-content-hint": "TEXT"
+                },
+                "text_3": {
+                  "title": "Type",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "Please enter your input",
+                  "x-ms-content-hint": "TEXT"
                 }
               },
               "required": [
                 "text",
                 "text_1",
-                "text_2"
+                "text_2",
+                "text_3"
               ]
             }
           }
@@ -68,7 +76,11 @@
       },
       "actions": {
         "Status": {
-          "runAfter": {},
+          "runAfter": {
+            "BuildObjectOrTenantID": [
+              "Succeeded"
+            ]
+          },
           "metadata": {
             "operationMetadataId": "8358d676-c5b9-45fe-879f-a1416818e8ff"
           },
@@ -105,7 +117,7 @@
               "Content-Type": "application/json",
               "body/delete": [
                 {
-                  "id": "@triggerBody()['text_2']"
+                  "id": "@outputs('BuildObjectOrTenantID')"
                 }
               ]
             },
@@ -170,6 +182,14 @@
               }
             }
           }
+        },
+        "BuildObjectOrTenantID": {
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "b362c133-a23d-4465-ac3c-5cd3548ee6dc"
+          },
+          "type": "Compose",
+          "inputs": "@if(equals(triggerBody()['text_3'], 'Tenant'), concat('tenant-', triggerBody()['text_2']), triggerBody()['text_2'])"
         }
       }
     },

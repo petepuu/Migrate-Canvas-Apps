@@ -1,0 +1,13 @@
+<environmentvariabledefinition schemaname="powciti_TargetEnvironmentTypes">
+  <description default="Comma separated list of allowed target environment types e.g. Sandbox,Production">
+    <label description="Comma separated list of allowed target environment types e.g. Sandbox,Production" languagecode="1033" />
+  </description>
+  <displayname default="Target Environment Types">
+    <label description="Target Environment Types" languagecode="1033" />
+  </displayname>
+  <introducedversion>1.0.0.1</introducedversion>
+  <iscustomizable>1</iscustomizable>
+  <isrequired>0</isrequired>
+  <secretstore>0</secretstore>
+  <type>100000000</type>
+</environmentvariabledefinition>

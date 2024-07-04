@@ -23,8 +23,15 @@
       <statecode>0</statecode>
       <statuscode>1</statuscode>
     </connectionreference>
+    <connectionreference connectionreferencelogicalname="powciti_MigrateCanvasAppsOffice365Groups">
+      <connectionreferencedisplayname>MigrateCanvasApps-Office365Groups</connectionreferencedisplayname>
+      <connectorid>/providers/Microsoft.PowerApps/apis/shared_office365groups</connectorid>
+      <iscustomizable>1</iscustomizable>
+      <statecode>0</statecode>
+      <statuscode>1</statuscode>
+    </connectionreference>
     <connectionreference connectionreferencelogicalname="powciti_Office365Users">
-      <connectionreferencedisplayname>Office365Users</connectionreferencedisplayname>
+      <connectionreferencedisplayname>MigrateCanvasApps-Office365Users</connectionreferencedisplayname>
       <connectorid>/providers/Microsoft.PowerApps/apis/shared_office365users</connectorid>
       <iscustomizable>1</iscustomizable>
       <statecode>0</statecode>

@@ -1,0 +1,191 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_powerappsforappmakers_1": {
+        "runtimeSource": "invoker",
+        "connection": {
+          "connectionReferenceLogicalName": "powciti_sharedpowerappsforappmakers_8fba6"
+        },
+        "api": {
+          "name": "shared_powerappsforappmakers"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        },
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        }
+      },
+      "triggers": {
+        "manual": {
+          "metadata": {
+            "operationMetadataId": "13dfa903-ae2b-4a1d-ac33-bed0c150bc3c"
+          },
+          "type": "Request",
+          "kind": "PowerAppV2",
+          "inputs": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "title": "TargetAppID",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "Please enter your input",
+                  "x-ms-content-hint": "TEXT"
+                }
+              },
+              "required": [
+                "text"
+              ]
+            }
+          }
+        }
+      },
+      "actions": {
+        "AppObject": {
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "3153ae61-5032-4edf-8611-515f9ae77ec8"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "AppObject",
+                "type": "array",
+                "value": []
+              }
+            ]
+          }
+        },
+        "Do_until": {
+          "actions": {
+            "Get_App": {
+              "runAfter": {},
+              "metadata": {
+                "operationMetadataId": "a650ec77-a45d-431b-96d8-271387eb97c3"
+              },
+              "type": "OpenApiConnection",
+              "inputs": {
+                "host": {
+                  "connectionName": "shared_powerappsforappmakers_1",
+                  "operationId": "Get-App",
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_powerappsforappmakers"
+                },
+                "parameters": {
+                  "app": "@triggerBody()['text']",
+                  "api-version": "2016-11-01"
+                },
+                "authentication": "@parameters('$authentication')"
+              }
+            },
+            "StatusCode": {
+              "runAfter": {
+                "Get_App": [
+                  "Succeeded",
+                  "Failed"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "e872a2e7-22f6-4b26-9915-26754668a4bf"
+              },
+              "type": "Compose",
+              "inputs": "@outputs('Get_App')['statusCode']"
+            },
+            "Condition": {
+              "actions": {
+                "Append_to_array_variable": {
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "507072d3-0880-4aa2-855b-df0152feeac4"
+                  },
+                  "type": "AppendToArrayVariable",
+                  "inputs": {
+                    "name": "AppObject",
+                    "value": {
+                      "DisplayName": "@outputs('Get_App')?['body/properties/displayName']",
+                      "ID": "@triggerBody()['text']",
+                      "Environment": "@outputs('Get_App')?['body/properties/environment/name']",
+                      "Created": "@outputs('Get_App')?['body/properties/createdTime']",
+                      "PlayURI": "@outputs('Get_App')?['body/properties/appOpenUri']",
+                      "LicenseDesignation": "",
+                      "HasDataverse": ""
+                    }
+                  }
+                }
+              },
+              "runAfter": {
+                "StatusCode": [
+                  "Succeeded"
+                ]
+              },
+              "expression": {
+                "equals": [
+                  "@outputs('StatusCode')",
+                  200
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "12e9ae6f-ee76-4c0e-b5e0-386a262e5924"
+              },
+              "type": "If"
+            }
+          },
+          "runAfter": {
+            "AppObject": [
+              "Succeeded"
+            ]
+          },
+          "expression": "@equals(outputs('StatusCode'), 200)",
+          "limit": {
+            "count": 60,
+            "timeout": "PT100S"
+          },
+          "metadata": {
+            "operationMetadataId": "8ff92686-a4b5-410a-bf9b-f2dc364f21fa"
+          },
+          "type": "Until"
+        },
+        "Respond_to_a_Power_App_or_flow": {
+          "runAfter": {
+            "Do_until": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "260fb3f3-9989-4344-a844-77e152f2ffa0"
+          },
+          "type": "Response",
+          "kind": "PowerApp",
+          "inputs": {
+            "statusCode": 200,
+            "body": {
+              "appobject": "@{variables('AppObject')}"
+            },
+            "schema": {
+              "type": "object",
+              "properties": {
+                "appobject": {
+                  "title": "AppObject",
+                  "x-ms-dynamically-added": true,
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "templateName": ""
+  },
+  "schemaVersion": "1.0.0.0"
+}

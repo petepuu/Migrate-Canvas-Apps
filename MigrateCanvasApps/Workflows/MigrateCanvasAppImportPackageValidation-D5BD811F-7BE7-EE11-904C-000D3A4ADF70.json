@@ -11,6 +11,9 @@
         }
       },
       "shared_commondataserviceforapps_1": {
+        "impersonation": {
+          "source": "invoker"
+        },
         "runtimeSource": "embedded",
         "connection": {
           "connectionReferenceLogicalName": "powciti_sharedcommondataserviceforapps_4cf94"
@@ -78,12 +81,15 @@
           "type": "OpenApiConnection",
           "inputs": {
             "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_office365users",
               "connectionName": "shared_office365users_1",
-              "operationId": "MyProfile_V2",
-              "apiId": "/providers/Microsoft.PowerApps/apis/shared_office365users"
+              "operationId": "MyProfile_V2"
             },
             "parameters": {},
-            "authentication": "@parameters('$authentication')"
+            "authentication": {
+              "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']",
+              "type": "Raw"
+            }
           }
         },
         "Respond_to_a_PowerApp_or_flow": {
@@ -241,9 +247,9 @@
           "type": "OpenApiConnection",
           "inputs": {
             "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
               "connectionName": "shared_commondataserviceforapps_1",
-              "operationId": "GetItem",
-              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+              "operationId": "GetItem"
             },
             "parameters": {
               "entityName": "powciti_migrationjobs",
@@ -265,9 +271,9 @@
           "type": "OpenApiConnection",
           "inputs": {
             "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
               "connectionName": "shared_commondataserviceforapps_1",
-              "operationId": "UpdateRecord",
-              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+              "operationId": "UpdateRecord"
             },
             "parameters": {
               "entityName": "powciti_migrationjobs",
@@ -289,16 +295,19 @@
               "type": "OpenApiConnection",
               "inputs": {
                 "host": {
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_migrate-20canvas-20apps-5fb1c7f5321b570664-5f5aadce8b365dea81",
                   "connectionName": "shared_migrate-20canvas-20apps-5fb1c7f5321b570664-5f5aadce8b365dea81_1",
-                  "operationId": "ListImportOperation",
-                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_migrate-20canvas-20apps-5fb1c7f5321b570664-5f5aadce8b365dea81"
+                  "operationId": "ListImportOperation"
                 },
                 "parameters": {
                   "EnvironmentID": "@outputs('Get-MigrationJob')?['body/powciti_targetenvironmentid']",
                   "OperationID": "@outputs('Get-MigrationJob')?['body/powciti_importlocation']",
                   "api-version": "2016-11-01"
                 },
-                "authentication": "@parameters('$authentication')"
+                "authentication": {
+                  "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']",
+                  "type": "Raw"
+                }
               }
             },
             "Parse-ListImportOperation": {
@@ -768,16 +777,19 @@
               "type": "OpenApiConnection",
               "inputs": {
                 "host": {
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_migrate-20canvas-20apps-5fb1c7f5321b570664-5f5aadce8b365dea81",
                   "connectionName": "shared_migrate-20canvas-20apps-5fb1c7f5321b570664-5f5aadce8b365dea81_1",
-                  "operationId": "ValidateImportPackage",
-                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_migrate-20canvas-20apps-5fb1c7f5321b570664-5f5aadce8b365dea81"
+                  "operationId": "ValidateImportPackage"
                 },
                 "parameters": {
                   "EnvironmentID": "@outputs('Get-MigrationJob')?['body/powciti_targetenvironmentid']",
                   "api-version": "2016-11-01",
                   "body": "@json(concat(substring(string(outputs('Set-PackageTelemetryID')), 0, sub(length(string(outputs('Set-PackageTelemetryID'))), 1)), '}}'))"
                 },
-                "authentication": "@parameters('$authentication')"
+                "authentication": {
+                  "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']",
+                  "type": "Raw"
+                }
               }
             },
             "Parse-ValidateImportPackage": {
@@ -1023,7 +1035,7 @@
         }
       }
     },
-    "templateName": ""
+    "templateName": null
   },
   "schemaVersion": "1.0.0.0"
 }

@@ -9,6 +9,24 @@
         "api": {
           "name": "shared_powerappsforappmakers"
         }
+      },
+      "shared_office365users_1": {
+        "runtimeSource": "invoker",
+        "connection": {
+          "connectionReferenceLogicalName": "powciti_Office365Users"
+        },
+        "api": {
+          "name": "shared_office365users"
+        }
+      },
+      "shared_office365groups_1": {
+        "runtimeSource": "invoker",
+        "connection": {
+          "connectionReferenceLogicalName": "powciti_MigrateCanvasAppsOffice365Groups"
+        },
+        "api": {
+          "name": "shared_office365groups"
+        }
       }
     },
     "definition": {
@@ -52,7 +70,11 @@
       },
       "actions": {
         "Get_App_Role_Assignments": {
-          "runAfter": {},
+          "runAfter": {
+            "AppPermissions": [
+              "Succeeded"
+            ]
+          },
           "metadata": {
             "operationMetadataId": "42aa6bbb-a6d3-4aea-9cbe-d5e6e2a8cd8b"
           },
@@ -73,7 +95,7 @@
         },
         "SelectNeededProperties": {
           "runAfter": {
-            "Get_App_Role_Assignments": [
+            "LoopPermissions": [
               "Succeeded"
             ]
           },
@@ -106,7 +128,7 @@
           "inputs": {
             "statusCode": 200,
             "body": {
-              "permissions": "@{body('SelectNeededProperties')}"
+              "permissions": "@{variables('AppPermissions')}"
             },
             "schema": {
               "type": "object",
@@ -118,6 +140,185 @@
                 }
               }
             }
+          }
+        },
+        "LoopPermissions": {
+          "foreach": "@outputs('Get_App_Role_Assignments')?['body/value']",
+          "actions": {
+            "Switch": {
+              "runAfter": {},
+              "cases": {
+                "User": {
+                  "case": "User",
+                  "actions": {
+                    "GetUser": {
+                      "runAfter": {},
+                      "metadata": {
+                        "operationMetadataId": "66b80d09-b666-4999-8ba7-311850598a15"
+                      },
+                      "type": "OpenApiConnection",
+                      "inputs": {
+                        "host": {
+                          "connectionName": "shared_office365users_1",
+                          "operationId": "UserProfile_V2",
+                          "apiId": "/providers/Microsoft.PowerApps/apis/shared_office365users"
+                        },
+                        "parameters": {
+                          "id": "@items('LoopPermissions')?['properties/principal/id']"
+                        },
+                        "authentication": "@parameters('$authentication')"
+                      }
+                    },
+                    "USER_NOT_FOUND": {
+                      "runAfter": {
+                        "GetUser": [
+                          "Failed"
+                        ]
+                      },
+                      "metadata": {
+                        "operationMetadataId": "4899dfd0-5523-4ce3-9fd1-2dfb9d444269"
+                      },
+                      "type": "Compose",
+                      "inputs": "USER NOT FOUND"
+                    },
+                    "Append_to_array_variable": {
+                      "runAfter": {
+                        "USER_NOT_FOUND": [
+                          "Skipped"
+                        ]
+                      },
+                      "metadata": {
+                        "operationMetadataId": "11658b42-ee96-418e-a001-0ec353a90bbf"
+                      },
+                      "type": "AppendToArrayVariable",
+                      "inputs": {
+                        "name": "AppPermissions",
+                        "value": {
+                          "Account": "@items('LoopPermissions')?['properties/principal/displayName']",
+                          "Type": "@items('LoopPermissions')?['properties/principal/type']",
+                          "Email": "@items('LoopPermissions')?['properties/principal/email']",
+                          "Role": "@items('LoopPermissions')?['properties/roleName']",
+                          "ObjectID": "@items('LoopPermissions')?['properties/principal/id']"
+                        }
+                      }
+                    }
+                  }
+                },
+                "Group": {
+                  "case": "Group",
+                  "actions": {
+                    "GetGroup": {
+                      "runAfter": {},
+                      "metadata": {
+                        "operationMetadataId": "7704b50d-9c97-45c9-b9dd-b7543571b583"
+                      },
+                      "type": "OpenApiConnection",
+                      "inputs": {
+                        "host": {
+                          "connectionName": "shared_office365groups_1",
+                          "operationId": "HttpRequestV2",
+                          "apiId": "/providers/Microsoft.PowerApps/apis/shared_office365groups"
+                        },
+                        "parameters": {
+                          "Uri": "https://graph.microsoft.com/v1.0/groups/@{items('LoopPermissions')?['properties/principal/id']}",
+                          "Method": "GET",
+                          "ContentType": "application/json"
+                        },
+                        "authentication": "@parameters('$authentication')"
+                      }
+                    },
+                    "GROUP_NOT_FOUND": {
+                      "runAfter": {
+                        "GetGroup": [
+                          "Failed"
+                        ]
+                      },
+                      "metadata": {
+                        "operationMetadataId": "ae45ec05-1831-4c99-9a82-56df5d35203b"
+                      },
+                      "type": "Compose",
+                      "inputs": "GROUP NOT FOUND"
+                    },
+                    "Append_to_array_variable_2": {
+                      "runAfter": {
+                        "GROUP_NOT_FOUND": [
+                          "Skipped"
+                        ]
+                      },
+                      "metadata": {
+                        "operationMetadataId": "c3c03dc2-954c-43a7-8801-ae6d62da642c"
+                      },
+                      "type": "AppendToArrayVariable",
+                      "inputs": {
+                        "name": "AppPermissions",
+                        "value": {
+                          "Account": "@items('LoopPermissions')?['properties/principal/displayName']",
+                          "Type": "@items('LoopPermissions')?['properties/principal/type']",
+                          "Email": "@items('LoopPermissions')?['properties/principal/email']",
+                          "Role": "@items('LoopPermissions')?['properties/roleName']",
+                          "ObjectID": "@items('LoopPermissions')?['properties/principal/id']"
+                        }
+                      }
+                    }
+                  }
+                },
+                "Tenant": {
+                  "case": "Tenant",
+                  "actions": {
+                    "Append_to_array_variable_3": {
+                      "runAfter": {},
+                      "metadata": {
+                        "operationMetadataId": "cfa25003-eb57-4e30-9ebb-60665bb4df9c"
+                      },
+                      "type": "AppendToArrayVariable",
+                      "inputs": {
+                        "name": "AppPermissions",
+                        "value": {
+                          "Account": "@items('LoopPermissions')?['properties/principal/displayName']",
+                          "Type": "@items('LoopPermissions')?['properties/principal/type']",
+                          "Email": "",
+                          "Role": "@items('LoopPermissions')?['properties/roleName']",
+                          "ObjectID": "@items('LoopPermissions')?['properties/principal/tenantId']"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "default": {
+                "actions": {}
+              },
+              "expression": "@items('LoopPermissions')?['properties/principal/type']",
+              "metadata": {
+                "operationMetadataId": "6d166e22-4018-49e1-9779-788e49bb2c28"
+              },
+              "type": "Switch"
+            }
+          },
+          "runAfter": {
+            "Get_App_Role_Assignments": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "7e219971-19fe-43f6-99cb-c7708beea0b4"
+          },
+          "type": "Foreach"
+        },
+        "AppPermissions": {
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "bcc35e32-0b6f-4d54-9cc2-28e9edf13929"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "AppPermissions",
+                "type": "array",
+                "value": []
+              }
+            ]
           }
         }
       }
