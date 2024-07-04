@@ -4,6 +4,9 @@ Solution for migrating Canvas Apps and their related resources like Flows betwee
 
 As this solution uses **Custom Connector**, all the users need to have standalone Power Apps license Power Apps Premium or Power Apps per App
 
+## Known issues
+- Source and target environments are listed using "PowerAppsforMakers.GetEnvironments()" which might return environments where user of the tool does not have necessary permissions. We need to make sure that users have **Environment Maker** permissions in the target environments
+
 ## Installation and configuration
 
 ### Create Entra ID application registration
@@ -205,7 +208,7 @@ This Power Platform solution installs Custom Connector
 
 # How to use the tool
 
-- App migration status is saved to **Migration Job** Dataverse table and users need to have read-write permissions to this table. Solution contains own security role **Canvas Apps Migration Users** which grant Create, Read and Write permissions to the table as well as Read permissions to Process (workflows) system table, so add this security role to app app users
+App migration status is saved to **Migration Job** Dataverse table and users need to have read-write permissions to this table. Solution contains own security role **Canvas Apps Migration Users** which grant Create, Read and Write permissions to the table as well as Read permissions to Process (workflows) system table, so add this security role to app app users
   
    <img width="500" alt="image" src="Images/securityrole.png" />
    
